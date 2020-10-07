@@ -72,6 +72,7 @@ def main():
 
     else:
         db_funcs.create_db()
+        db_funcs.create_db_table()
 
         verses = get_verses()
         cleaned_verses = clean_verses(verses)

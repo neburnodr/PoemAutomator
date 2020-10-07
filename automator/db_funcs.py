@@ -56,7 +56,7 @@ def create_db_table():
     conn = None
 
     try:
-        conn = psycopg2.connect("user=postgres host=localhost password=|>ediatraTROMPET4 port=5432")
+        conn = psycopg2.connect("user=postgres  host=localhost db=verses_db password=|>ediatraTROMPET4 port=5432")
         print('Database connected.')
     except:
         print('Database not connected.')
