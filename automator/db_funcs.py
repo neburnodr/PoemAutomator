@@ -49,14 +49,15 @@ def create_db():
         cur = conn.cursor()
 
         cur.execute("""CREATE DATABASE verses_db;""")
-        conn.close()
+
+    conn.close()
 
 
 def create_db_table():
     conn = None
 
     try:
-        conn = psycopg2.connect("user=postgres  host=localhost db=verses_db password=|>ediatraTROMPET4 port=5432")
+        conn = psycopg2.connect("user=postgres host=localhost password=|>ediatraTROMPET4 port=5432")
         print('Database connected.')
     except:
         print('Database not connected.')
@@ -75,7 +76,8 @@ def create_db_table():
                     int_verse bool,
                     fin_verse bool);
                     """)
-        conn.close()
+
+    conn.close()
 
 
 def csv_file_creator(verse):
