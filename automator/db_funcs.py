@@ -1,5 +1,6 @@
 import psycopg2
 import csv
+import getpass
 from os import path
 save_csv_path = "/home/nebur/Desktop/poemautomator/files"
 
@@ -39,7 +40,12 @@ def create_db():
     conn = None
 
     try:
-        conn = psycopg2.connect("user=postgres host=localhost password=|>ediatraTROMPET4 port=5432")
+        conn = psycopg2.connect(user="postgres",
+                                host="localhost",
+                                password=getpass.getpass(),
+                                port="5432",
+                                )
+
         print('Database connected.')
     except:
         print('Database not connected.')
@@ -57,7 +63,12 @@ def create_db_table():
     conn = None
 
     try:
-        conn = psycopg2.connect("user=postgres host=localhost password=|>ediatraTROMPET4 port=5432")
+        conn = psycopg2.connect(user="postgres",
+                                host="localhost",
+                                password=getpass.getpass(),
+                                port="5432",
+                                database="verses_db",
+                                )
         print('Database connected.')
     except:
         print('Database not connected.')
