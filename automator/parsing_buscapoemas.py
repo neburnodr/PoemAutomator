@@ -50,7 +50,7 @@ def getting_poems(url):
     for poet_url in poet_urls:
         print("[+] Scraping {}".format(poet_url))
 
-        resp = requests.get(poet_urls)
+        resp = requests.get(poet_url)
         soup = bs4.BeautifulSoup(resp.text, "lxml")
         poem_anchors = soup.select(".slot_poema_autor")
         poem_urls.extend([tag.a["href"] for tag in poem_anchors])
@@ -67,10 +67,10 @@ def main():
 
     poem_urls = getting_poems(url)
 
+    verses = []
     for poem_url in poem_urls:
-        verses = getting_the_verses(poem_url)
+        verses.extend(getting_the_verses(poem_url))
 
-        saving_the_files(verses)
 
 if __name__ == "__main__":
     main()

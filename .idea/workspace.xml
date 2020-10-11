@@ -6,6 +6,15 @@
         <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
         <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
       </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
     </expand>
     <select>
       <path>
@@ -16,9 +25,10 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6eb041f2-c533-4920-9c13-ae9c2fd01ceb" name="Default Changelist" comment="">
+    <list default="true" id="6eb041f2-c533-4920-9c13-ae9c2fd01ceb" name="Default Changelist" comment="added getpass to hide pwd">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/automator/db_funcs.py" beforeDir="false" afterPath="$PROJECT_DIR$/automator/db_funcs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -119,7 +129,14 @@
       <option name="project" value="LOCAL" />
       <updated>1602080727528</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="added getpass to hide pwd">
+      <created>1602320782754</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1602320782754</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -144,44 +161,50 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="for now" />
-    <option name="LAST_COMMIT_MESSAGE" value="for now" />
+    <MESSAGE value="added getpass to hide pwd" />
+    <option name="LAST_COMMIT_MESSAGE" value="added getpass to hide pwd" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1825" height="340" key="GridCell.Tab.0.bottom" timestamp="1602084741119">
+    <state x="774" y="300" width="424" height="520" key="FileChooserDialogImpl" timestamp="1602148505556">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1825" height="340" key="GridCell.Tab.0.bottom/72.27.1848.1053@72.27.1848.1053" timestamp="1602084741119" />
-    <state width="1825" height="340" key="GridCell.Tab.0.center" timestamp="1602084741118">
+    <state x="774" y="300" width="424" height="520" key="FileChooserDialogImpl/72.27.1848.1053@72.27.1848.1053" timestamp="1602148505556" />
+    <state width="1825" height="479" key="GridCell.Tab.0.bottom" timestamp="1602399701729">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1825" height="340" key="GridCell.Tab.0.center/72.27.1848.1053@72.27.1848.1053" timestamp="1602084741118" />
-    <state width="1825" height="340" key="GridCell.Tab.0.left" timestamp="1602084741118">
+    <state width="1825" height="479" key="GridCell.Tab.0.bottom/72.27.1848.1053@72.27.1848.1053" timestamp="1602399701729" />
+    <state width="1825" height="479" key="GridCell.Tab.0.center" timestamp="1602399701728">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1825" height="340" key="GridCell.Tab.0.left/72.27.1848.1053@72.27.1848.1053" timestamp="1602084741118" />
-    <state width="1825" height="340" key="GridCell.Tab.0.right" timestamp="1602084741119">
+    <state width="1825" height="479" key="GridCell.Tab.0.center/72.27.1848.1053@72.27.1848.1053" timestamp="1602399701728" />
+    <state width="1825" height="479" key="GridCell.Tab.0.left" timestamp="1602399701728">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1825" height="340" key="GridCell.Tab.0.right/72.27.1848.1053@72.27.1848.1053" timestamp="1602084741119" />
-    <state width="1825" height="340" key="GridCell.Tab.1.bottom" timestamp="1602084670373">
+    <state width="1825" height="479" key="GridCell.Tab.0.left/72.27.1848.1053@72.27.1848.1053" timestamp="1602399701728" />
+    <state width="1825" height="479" key="GridCell.Tab.0.right" timestamp="1602399701728">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1825" height="340" key="GridCell.Tab.1.bottom/72.27.1848.1053@72.27.1848.1053" timestamp="1602084670373" />
-    <state width="1825" height="340" key="GridCell.Tab.1.center" timestamp="1602084670372">
+    <state width="1825" height="479" key="GridCell.Tab.0.right/72.27.1848.1053@72.27.1848.1053" timestamp="1602399701728" />
+    <state width="1825" height="479" key="GridCell.Tab.1.bottom" timestamp="1602399700098">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1825" height="340" key="GridCell.Tab.1.center/72.27.1848.1053@72.27.1848.1053" timestamp="1602084670372" />
-    <state width="1825" height="340" key="GridCell.Tab.1.left" timestamp="1602084670372">
+    <state width="1825" height="479" key="GridCell.Tab.1.bottom/72.27.1848.1053@72.27.1848.1053" timestamp="1602399700098" />
+    <state width="1825" height="479" key="GridCell.Tab.1.center" timestamp="1602399700097">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1825" height="340" key="GridCell.Tab.1.left/72.27.1848.1053@72.27.1848.1053" timestamp="1602084670372" />
-    <state width="1825" height="340" key="GridCell.Tab.1.right" timestamp="1602084670372">
+    <state width="1825" height="479" key="GridCell.Tab.1.center/72.27.1848.1053@72.27.1848.1053" timestamp="1602399700097" />
+    <state width="1825" height="479" key="GridCell.Tab.1.left" timestamp="1602399700096">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1825" height="340" key="GridCell.Tab.1.right/72.27.1848.1053@72.27.1848.1053" timestamp="1602084670372" />
+    <state width="1825" height="479" key="GridCell.Tab.1.left/72.27.1848.1053@72.27.1848.1053" timestamp="1602399700096" />
+    <state width="1825" height="479" key="GridCell.Tab.1.right" timestamp="1602399700097">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state width="1825" height="479" key="GridCell.Tab.1.right/72.27.1848.1053@72.27.1848.1053" timestamp="1602399700097" />
     <state x="591" y="275" width="800" height="563" key="Vcs.Push.Dialog.v2" timestamp="1602081246069">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
@@ -201,13 +224,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>69</line>
+          <line>95</line>
           <option name="timeStamp" value="14" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/automator/db_funcs.py</url>
-          <line>38</line>
-          <option name="timeStamp" value="15" />
+          <url>file://$PROJECT_DIR$/automator/analyse_verses.py</url>
+          <line>312</line>
+          <option name="timeStamp" value="16" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
