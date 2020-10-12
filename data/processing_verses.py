@@ -40,10 +40,12 @@ def cutting_the_long_verses(verse):
 def recutting_the_still_long_verses(verse):
     new_verses_list = []
 
-    sub_verses = verse.split(", ")
+    sub_verses = verse.split(",")
 
     for sub_verse in sub_verses:
-        if sub_verse == sub_verses[-1]:
+        sub_verse = sub_verse.strip()
+
+        if sub_verse == sub_verses[-1].strip():
             new_verses_list.append(sub_verse)
         else:
             new_verses_list.append(sub_verse + ",")
@@ -55,4 +57,7 @@ def removing_junk(verse_list):
     new_verse_list = []
 
     for verse in verse_list:
-        if verse and len(verse) > 5
+        if verse and len(verse) > 5:
+            new_verse_list.append(verse)
+
+    return new_verse_list
