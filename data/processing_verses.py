@@ -34,7 +34,7 @@ def cutting_the_long_verses(verse):
         else:
             new_verses_list.append(sub_verse)
 
-    return new_verses_list
+    return removing_junk(new_verses_list)
 
 
 def recutting_the_still_long_verses(verse):
@@ -47,3 +47,12 @@ def recutting_the_still_long_verses(verse):
             new_verses_list.append(sub_verse)
         else:
             new_verses_list.append(sub_verse + ",")
+
+    return removing_junk(new_verses_list)
+
+
+def removing_junk(verse_list):
+    new_verse_list = []
+
+    for verse in verse_list:
+        if verse and len(verse) > 5
