@@ -26,8 +26,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6eb041f2-c533-4920-9c13-ae9c2fd01ceb" name="Default Changelist" comment="added getpass to hide pwd">
+      <change afterPath="$PROJECT_DIR$/automator/test_funcs.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/automator/db_funcs.py" beforeDir="false" afterPath="$PROJECT_DIR$/automator/db_funcs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/automator/parsing_buscapoemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/automator/parsing_buscapoemas.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -85,6 +86,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="db_funcs" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="poemautomator" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/automator" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/automator/db_funcs.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="poemautomator" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -106,9 +128,32 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="parsing_buscapoemas" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="poemautomator" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/automator" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/automator/parsing_buscapoemas.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.parsing_buscapoemas" />
+        <item itemvalue="Python.db_funcs" />
         <item itemvalue="Python.analyse_verses" />
       </list>
     </recent_temporary>
@@ -173,38 +218,38 @@
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
     <state x="774" y="300" width="424" height="520" key="FileChooserDialogImpl/72.27.1848.1053@72.27.1848.1053" timestamp="1602148505556" />
-    <state width="1825" height="479" key="GridCell.Tab.0.bottom" timestamp="1602399701729">
+    <state width="1825" height="353" key="GridCell.Tab.0.bottom" timestamp="1602447487326">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1825" height="479" key="GridCell.Tab.0.bottom/72.27.1848.1053@72.27.1848.1053" timestamp="1602399701729" />
-    <state width="1825" height="479" key="GridCell.Tab.0.center" timestamp="1602399701728">
+    <state width="1825" height="353" key="GridCell.Tab.0.bottom/72.27.1848.1053@72.27.1848.1053" timestamp="1602447487326" />
+    <state width="1825" height="353" key="GridCell.Tab.0.center" timestamp="1602447487326">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1825" height="479" key="GridCell.Tab.0.center/72.27.1848.1053@72.27.1848.1053" timestamp="1602399701728" />
-    <state width="1825" height="479" key="GridCell.Tab.0.left" timestamp="1602399701728">
+    <state width="1825" height="353" key="GridCell.Tab.0.center/72.27.1848.1053@72.27.1848.1053" timestamp="1602447487326" />
+    <state width="1825" height="353" key="GridCell.Tab.0.left" timestamp="1602447487325">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1825" height="479" key="GridCell.Tab.0.left/72.27.1848.1053@72.27.1848.1053" timestamp="1602399701728" />
-    <state width="1825" height="479" key="GridCell.Tab.0.right" timestamp="1602399701728">
+    <state width="1825" height="353" key="GridCell.Tab.0.left/72.27.1848.1053@72.27.1848.1053" timestamp="1602447487325" />
+    <state width="1825" height="353" key="GridCell.Tab.0.right" timestamp="1602447487326">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1825" height="479" key="GridCell.Tab.0.right/72.27.1848.1053@72.27.1848.1053" timestamp="1602399701728" />
-    <state width="1825" height="479" key="GridCell.Tab.1.bottom" timestamp="1602399700098">
+    <state width="1825" height="353" key="GridCell.Tab.0.right/72.27.1848.1053@72.27.1848.1053" timestamp="1602447487326" />
+    <state width="1825" height="388" key="GridCell.Tab.1.bottom" timestamp="1602436444987">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1825" height="479" key="GridCell.Tab.1.bottom/72.27.1848.1053@72.27.1848.1053" timestamp="1602399700098" />
-    <state width="1825" height="479" key="GridCell.Tab.1.center" timestamp="1602399700097">
+    <state width="1825" height="388" key="GridCell.Tab.1.bottom/72.27.1848.1053@72.27.1848.1053" timestamp="1602436444987" />
+    <state width="1825" height="388" key="GridCell.Tab.1.center" timestamp="1602436444986">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1825" height="479" key="GridCell.Tab.1.center/72.27.1848.1053@72.27.1848.1053" timestamp="1602399700097" />
-    <state width="1825" height="479" key="GridCell.Tab.1.left" timestamp="1602399700096">
+    <state width="1825" height="388" key="GridCell.Tab.1.center/72.27.1848.1053@72.27.1848.1053" timestamp="1602436444986" />
+    <state width="1825" height="388" key="GridCell.Tab.1.left" timestamp="1602436444986">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1825" height="479" key="GridCell.Tab.1.left/72.27.1848.1053@72.27.1848.1053" timestamp="1602399700096" />
-    <state width="1825" height="479" key="GridCell.Tab.1.right" timestamp="1602399700097">
+    <state width="1825" height="388" key="GridCell.Tab.1.left/72.27.1848.1053@72.27.1848.1053" timestamp="1602436444986" />
+    <state width="1825" height="388" key="GridCell.Tab.1.right" timestamp="1602436444987">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
-    <state width="1825" height="479" key="GridCell.Tab.1.right/72.27.1848.1053@72.27.1848.1053" timestamp="1602399700097" />
+    <state width="1825" height="388" key="GridCell.Tab.1.right/72.27.1848.1053@72.27.1848.1053" timestamp="1602436444987" />
     <state x="591" y="275" width="800" height="563" key="Vcs.Push.Dialog.v2" timestamp="1602081246069">
       <screen x="72" y="27" width="1848" height="1053" />
     </state>
@@ -224,13 +269,23 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>95</line>
+          <line>97</line>
           <option name="timeStamp" value="14" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/automator/analyse_verses.py</url>
           <line>312</line>
           <option name="timeStamp" value="16" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/automator/parsing_buscapoemas.py</url>
+          <line>95</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/automator/parsing_buscapoemas.py</url>
+          <line>19</line>
+          <option name="timeStamp" value="18" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

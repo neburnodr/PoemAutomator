@@ -1,11 +1,7 @@
-from automator import parsing_amediavoz
-from automator import parsing_buscapoemas
-from automator.processing_verses import cutting_the_long_verses, recutting_the_still_long_verses
-from automator import db_funcs
+from data import parsing_amediavoz, parsing_buscapoemas, db_funcs
+from data.processing_verses import cutting_the_long_verses, recutting_the_still_long_verses
+from data.analyse_verses import Syllabifier
 from automator import poem_creator
-from automator.analyse_verses import Syllabifier
-from os import path
-
 
 urls = ["http://amediavoz.com/indice-A-K.htm",
         "http://amediavoz.com/indice-L-Z.htm",
@@ -50,8 +46,10 @@ def get_verses():
 
     urls_poems_buscapoemas = parsing_buscapoemas.getting_poems(urls[2])
 
+    print("")
     print("[+] Extracting the verses")
     for poem_url in urls_poems_buscapoemas:
+        print("[+] Extracting {}".format(poem_url))
         verses.extend(parsing_buscapoemas.getting_the_verses(poem_url))
 
     print("[+] Done", end="\n\n")
@@ -74,7 +72,7 @@ def clean_verses(verses):
 
             for cutted_verse in cutted_verses:
 
-                if cutted_verse < 50:
+                if len(cutted_verse) < 50:
                     new_verses_list.append(verse)
 
                 else:
@@ -82,7 +80,7 @@ def clean_verses(verses):
 
                     for recutted in recutted_verses:
 
-                        if recutted < 50:
+                        if len(recutted) < 50:
                             new_verses_list.append(recutted)
 
                         else:

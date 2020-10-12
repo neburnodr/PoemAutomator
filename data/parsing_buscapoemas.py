@@ -47,13 +47,32 @@ def getting_poems(url):
     poet_urls = getting_poets(url)
     poem_urls = []
 
-    for poet_url in poet_urls:
-        print("[+] Scraping {}".format(poet_url))
+    exclude_poets = ["https://www.buscapoemas.net/poeta/Alfonso-X-el-Sabio.htm",
+                     "https://www.buscapoemas.net/poeta/Francisco-de-Rojas-Zorrilla.htm",
+                     "https://www.buscapoemas.net/poeta/Fray-Luis-de-León.htm",
+                     "https://www.buscapoemas.net/poeta/Diego-de-Torres-y-Villarroel.htm",
+                     "https://www.buscapoemas.net/poeta/Cristóbal-de-Castillejo.htm",
+                     "https://www.buscapoemas.net/poeta/Bartolomé-de-Argensola.htm",
+                     "https://www.buscapoemas.net/poeta/Baltasar-del-Alcázar.htm",
+                     "https://www.buscapoemas.net/poeta/Gonzalo-de-Berceo.htm",
+                     "https://www.buscapoemas.net/poeta/Gutierre-de-Cetina.htm",
+                     "https://www.buscapoemas.net/poeta/Jorge-Manrique.htm",
+                     "https://www.buscapoemas.net/poeta/Juan-Boscán.htm",
+                     "https://www.buscapoemas.net/poeta/Juan-Ruiz-Arcipreste-de-Hita.htm",
+                     "https://www.buscapoemas.net/poeta/Juan-de-Tassis-y-Peralta.htm",
+                     "https://www.buscapoemas.net/poeta/Marqués-de-Santillana.htm",
+                     "https://www.buscapoemas.net/poeta/San-Juan-de-la-Cruz.htm",
+                     "https://www.buscapoemas.net/poeta/Tirso-de-Molina.htm",
+                     ]
 
-        resp = requests.get(poet_url)
-        soup = bs4.BeautifulSoup(resp.text, "lxml")
-        poem_anchors = soup.select(".slot_poema_autor")
-        poem_urls.extend([tag.a["href"] for tag in poem_anchors])
+    for poet_url in poet_urls:
+        if poet_url not in exclude_poets:
+            print("[+] Scraping {}".format(poet_url))
+
+            resp = requests.get(poet_url)
+            soup = bs4.BeautifulSoup(resp.text, "lxml")
+            poem_anchors = soup.select(".slot_poema_autor")
+            poem_urls.extend([tag.a["href"] for tag in poem_anchors])
 
     return poem_urls
 
@@ -69,6 +88,7 @@ def main():
 
     verses = []
     for poem_url in poem_urls:
+        print("[+] Extracting {}".format(poem_url))
         verses.extend(getting_the_verses(poem_url))
 
 

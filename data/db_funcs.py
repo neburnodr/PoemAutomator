@@ -3,7 +3,7 @@ import csv
 import getpass
 from os import path
 import sys
-save_csv_path = "/home/nebur/Desktop/poemautomator/files"
+save_csv_path = "/data"
 
 
 def check_if_db_exists():
