@@ -15,9 +15,9 @@ def fetch_data():
     verses = get_verses()
     cleaned_verses = clean_verses(verses)
 
+    print("[+] Analysing the verses and creating the CSV File.")
     for i, verse in enumerate(cleaned_verses):
 
-        print("[+] Analysing the verses and creating the CSV File.")
         analysed_verse = Syllabifier(verse)
 
         ready_verse = [i,
@@ -31,7 +31,8 @@ def fetch_data():
                        ]
 
         db_funcs.csv_file_creator(ready_verse)
-        print("[+] Done analysing the verses. CSV File ready to use.")
+
+    print("[+] Done analysing the verses. CSV File ready to use.")
 
 
 
