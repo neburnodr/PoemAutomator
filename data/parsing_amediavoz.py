@@ -72,6 +72,17 @@ def getting_the_verses(links):
 
 def getting_amediavoz_links(urls):
     links = []
+    discarded_urls = ["http://amediavoz.com/mediavoz.htm",
+                      "http://amediavoz.com/poetas.htm",
+                      "http://amediavoz.com/sensual.htm",
+                      "http://amediavoz.com/ventanas.htm",
+                      "http://amediavoz.com/tucuerpo.htm",
+                      "http://amediavoz.com/traducciones.htm",
+                      "http://amediavoz.com/poesiadeoro.htm",
+                      "http://amediavoz.com/index.htm",
+                      "http://amediavoz.com/indice-A-K.htm",
+                      "http://amediavoz.com/indice-L-Z.htm"
+                      ]
 
     for url in urls:
         resp = requests.get(url)
@@ -81,7 +92,7 @@ def getting_amediavoz_links(urls):
         anchors = ['http://amediavoz.com' + anchor['href'][1:] for anchor in anchors]
 
         for anchor in anchors:
-            if anchor.endswith(".htm") and anchor not in links and anchor not in urls:
+            if anchor.endswith(".htm") and anchor not in links and anchor not in discarded_urls:
                 links.append(anchor)
 
     return links

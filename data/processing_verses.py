@@ -1,8 +1,43 @@
+def clean_verses(verses):
+    print("[+] Processing the scraped verses")
+
+    new_verses_list = []
+
+    for verse in verses:
+
+        if len(verse) < 50:
+            new_verses_list.append(verse)
+
+        else:
+            cutted_verses = cutting_the_long_verses(verse)
+
+            for cutted_verse in cutted_verses:
+
+                if len(cutted_verse) < 50:
+                    new_verses_list.append(verse)
+
+                else:
+                    recutted_verses = recutting_the_still_long_verses(cutted_verse)
+
+                    for recutted in recutted_verses:
+
+                        if len(recutted) < 50:
+                            new_verses_list.append(recutted)
+
+                        else:
+                            pass
+
+    print("[+] Done processing the verses", end="\n\n")
+    return new_verses_list
+
+
 def cutting_the_long_verses(verse):
     new_verses_list = []
 
     sub_verses = verse.split(". ")
     for sub_verse in sub_verses:
+        if len(sub_verse) < 5:
+            continue
 
         if sub_verse[0] == "¿" and sub_verse.count("?") == 0:
             sub_verse = sub_verse[1:]

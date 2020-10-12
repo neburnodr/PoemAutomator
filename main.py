@@ -1,5 +1,5 @@
 from data import parsing_amediavoz, parsing_buscapoemas, db_funcs
-from data.processing_verses import cutting_the_long_verses, recutting_the_still_long_verses
+from data.processing_verses import clean_verses
 from data.analyse_verses import Syllabifier
 from automator import poem_creator
 
@@ -35,7 +35,6 @@ def fetch_data():
     print("[+] Done analysing the verses. CSV File ready to use.")
 
 
-
 def get_verses():
     print("[+] Getting the poet urls from amediavoz.com")
     urls_poets_amediavoz = parsing_amediavoz.getting_amediavoz_links(urls[:2])
@@ -56,39 +55,6 @@ def get_verses():
     print("[+] Done", end="\n\n")
 
     return verses
-
-
-def clean_verses(verses):
-    print("[+] Processing the scraped verses")
-
-    new_verses_list = []
-
-    for verse in verses:
-
-        if len(verse) < 50:
-            new_verses_list.append(verse)
-
-        else:
-            cutted_verses = cutting_the_long_verses(verse)
-
-            for cutted_verse in cutted_verses:
-
-                if len(cutted_verse) < 50:
-                    new_verses_list.append(verse)
-
-                else:
-                    recutted_verses = recutting_the_still_long_verses(cutted_verse)
-
-                    for recutted in recutted_verses:
-
-                        if len(recutted) < 50:
-                            new_verses_list.append(recutted)
-
-                        else:
-                            pass
-
-    print("[+] Done processing the verses", end="\n\n")
-    return new_verses_list
 
 
 def main():
