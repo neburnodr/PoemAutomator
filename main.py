@@ -2,6 +2,8 @@ from data import parsing_amediavoz, parsing_buscapoemas, db_funcs
 from data.processing_verses import clean_verses
 from data.analyse_verses import Syllabifier
 from automator import poem_creator
+from os import path
+import getpass
 
 urls = [
     "http://amediavoz.com/indice-A-K.htm",
@@ -11,10 +13,19 @@ urls = [
 
 
 def fetch_data():
-    print("[+] Starting the webscraping process to create a database of verses...")
+    if not path.exists("data/verses.txt"):
 
-    verses = get_verses()
-    cleaned_verses = clean_verses(verses)
+        print("[+] Starting the webscraping process to create a database of verses...")
+        verses = get_verses()
+        cleaned_verses = clean_verses(verses)
+
+        print("[+] Saving the verses in a .txt file")
+        with open("data/verses.txt", "w") as f:
+            f.write("\n".join(cleaned_verses))
+
+    else:
+        with open("data/verses.txt") as f:
+            cleaned_verses = f.read().split("\n")
 
     print("[+] Analysing the verses and creating the CSV File.")
     for i, verse in enumerate(cleaned_verses):
@@ -60,33 +71,31 @@ def get_verses():
 
 
 def main():
-    if db_funcs.check_if_db_exists():
+    db_exist = input("Do you need to build the DB of verses? [y/n]")
 
-        if db_funcs.check_if_table_exists():
-
-            print(
-                "[+] Requirements satisfied. Starting the poem generator...", end="\n\n"
-            )
-            poem_creator.create_poem()
-
-        else:
-
-            db_funcs.create_db_table()
-
-            fetch_data()
-
-            print(
-                "[+] Requirements satisfied. Starting the poem generator...", end="\n\n"
-            )
-            poem_creator.create_poem()
+    if db_exist.capitalize() != "Y":
+        print(
+            "[+] Requirements satisfied. Starting the poem generator...", end="\n\n"
+        )
+        poem_creator.create_poem()
 
     else:
-        db_funcs.create_db()
+        pg_username = input("Enter username to use for PostgreSQL: ")
+        pg_pwd = getpass.getpass("Enter password for given user: ")
+        database_name = input("Enter name of the DB to be created: ")
+        tablename = "verses"
 
-        db_funcs.create_db_table()
+        if not db_funcs.check_if_db_exists(pg_username, pg_pwd, database_name):
+            db_funcs.create_db(pg_username, pg_pwd, database_name)
+            db_funcs.create_db_table(pg_username, pg_pwd, database_name, tablename)
 
+        if not db_funcs.check_if_table_exists(pg_username, pg_pwd, database_name, tablename):
+            db_funcs.create_db_table(pg_username, pg_pwd, database_name, tablename)
+
+        db_funcs.delete_rows_from_table(pg_username, pg_pwd, database_name, tablename)
         fetch_data()
 
+        print("[+] Requirements satisfied. Starting the poem generator...", end="\n\n")
         poem_creator.create_poem()
 
 

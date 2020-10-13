@@ -1,17 +1,16 @@
 import psycopg2
 import csv
-import getpass
 
 save_csv_path = "/home/nebur/Desktop/poemautomator/data"
 
 
-def check_if_db_exists():
+def check_if_db_exists(user, pwd, database_name):
     conn = None
 
     conn = psycopg2.connect(
-        user="postgres",
+        user=user,
         host="localhost",
-        password=getpass.getpass(),
+        password=pwd,
         port="5432",
     )
 
@@ -26,8 +25,6 @@ def check_if_db_exists():
         list_database = cur.fetchall()
         list_database = [db[0] for db in list_database]
 
-        database_name = "verses_db"
-
         if database_name in list_database:
             print("[+] '{}' database already exist".format(database_name))
             conn.close()
@@ -39,43 +36,41 @@ def check_if_db_exists():
             return False
 
 
-def create_db():
+def create_db(user, pwd, database_name):
     print("[+] Creating the database...")
 
     conn = None
 
     conn = psycopg2.connect(
-        user="postgres",
+        user=user,
         host="localhost",
-        password=getpass.getpass(),
+        password=pwd,
         port="5432",
     )
 
     conn.autocommit = True
     cur = conn.cursor()
 
-    cur.execute("""CREATE DATABASE verses_db;""")
+    cur.execute("""CREATE DATABASE {};""".format(database_name))
 
     conn.close()
 
-    print("[+] Database 'verses_db' created")
+    print("[+] Database '{}' created".format(database_name))
 
 
-def check_if_table_exists():
+def check_if_table_exists(user, pwd, database_name, tablename):
     conn = None
 
     conn = psycopg2.connect(
-        user="postgres",
+        user=user,
         host="localhost",
-        password=getpass.getpass(),
-        database="verses_db",
+        password=pwd,
+        database=database_name,
         port="5432",
     )
 
     conn.autocommit = True
     cur = conn.cursor()
-
-    tablename = "verses"
 
     cur.execute(
         """SELECT EXISTS (
@@ -95,17 +90,18 @@ def check_if_table_exists():
         return False
 
 
-def create_db_table():
-    print("[+] Creating the table...")
+def create_db_table(user, pwd, database_name, tablename):
+    print("[+] Creating the table {} in {}".format(tablename,
+                                                   database_name))
 
     conn = None
 
     conn = psycopg2.connect(
-        user="postgres",
+        user=user,
         host="localhost",
-        password=getpass.getpass(),
+        password=pwd,
         port="5432",
-        database="verses_db",
+        database=database_name,
     )
 
     conn.autocommit = True
@@ -113,7 +109,7 @@ def create_db_table():
     cur = conn.cursor()
 
     cur.execute(
-        """CREATE TABLE verses(
+        f"""CREATE TABLE {tablename}(
                 id integer,
                 verse text,
                 long integer,
@@ -121,13 +117,42 @@ def create_db_table():
                 asonant_rhyme text,
                 beg_verse bool,
                 int_verse bool,
-                fin_verse bool);
-                """
+                fin_verse bool,
+                UNIQUE(id, verse)
+        );
+        """
     )
 
     conn.close()
 
-    print("[+] Table created.")
+    print("[+] Table {} created in {}.".format(tablename,
+                                               database_name))
+
+
+def delete_rows_from_table(user, pwd, database, tablename):
+    print("[+] Deleting all rows from {} in {}".format(tablename,
+                                                       database))
+
+    conn = None
+
+    conn = psycopg2.connect(
+        user=user,
+        host="localhost",
+        password=pwd,
+        port="5432",
+        database=database,
+    )
+
+    conn.autocommit = True
+
+    cur = conn.cursor()
+
+    cur.execute(f"DELETE FROM {tablename};")
+
+    conn.close()
+
+    print("[+] Table {} in {} is now clean for repopulating".format(tablename,
+                                                                    database))
 
 
 def csv_file_creator(verse):
