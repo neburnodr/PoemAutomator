@@ -2,7 +2,7 @@ from data.processing_verses import clean_verses as clean
 
 
 with open("f_tst.txt") as f:
-     lines  = f.read().split("\n")
+    lines = f.read().split("\n")
 
 
 lines_clean = clean(lines)

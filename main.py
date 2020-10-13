@@ -3,10 +3,11 @@ from data.processing_verses import clean_verses
 from data.analyse_verses import Syllabifier
 from automator import poem_creator
 
-urls = ["http://amediavoz.com/indice-A-K.htm",
-        "http://amediavoz.com/indice-L-Z.htm",
-        "https://www.buscapoemas.net/poetas.html",
-        ]
+urls = [
+    "http://amediavoz.com/indice-A-K.htm",
+    "http://amediavoz.com/indice-L-Z.htm",
+    "https://www.buscapoemas.net/poetas.html",
+]
 
 
 def fetch_data():
@@ -20,15 +21,16 @@ def fetch_data():
 
         analysed_verse = Syllabifier(verse)
 
-        ready_verse = [i,
-                       verse,
-                       analysed_verse.syllables,
-                       analysed_verse.consonant_rhyme,
-                       analysed_verse.asonant_rhyme,
-                       analysed_verse.beg,
-                       analysed_verse.end,
-                       analysed_verse.int,
-                       ]
+        ready_verse = [
+            i,
+            verse,
+            analysed_verse.syllables,
+            analysed_verse.consonant_rhyme,
+            analysed_verse.asonant_rhyme,
+            analysed_verse.beg,
+            analysed_verse.end,
+            analysed_verse.int,
+        ]
 
         db_funcs.csv_file_creator(ready_verse)
 
@@ -62,7 +64,9 @@ def main():
 
         if db_funcs.check_if_table_exists():
 
-            print("[+] Requirements satisfied. Starting the poem generator...", end="\n\n")
+            print(
+                "[+] Requirements satisfied. Starting the poem generator...", end="\n\n"
+            )
             poem_creator.create_poem()
 
         else:
@@ -71,7 +75,9 @@ def main():
 
             fetch_data()
 
-            print("[+] Requirements satisfied. Starting the poem generator...", end="\n\n")
+            print(
+                "[+] Requirements satisfied. Starting the poem generator...", end="\n\n"
+            )
             poem_creator.create_poem()
 
     else:

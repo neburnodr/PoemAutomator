@@ -1,26 +1,29 @@
 import string
 
 
-
-vowels = 'aeiouáéíóúAEIOUÁÉÍÓÚ'
+vowels = "aeiouáéíóúAEIOUÁÉÍÓÚ"
 vowels_h = vowels + "h"
-consonants = "".join((letter for letter in string.ascii_letters if letter not in vowels)) + "ñÑ"
+consonants = (
+    "".join((letter for letter in string.ascii_letters if letter not in vowels)) + "ñÑ"
+)
 debiles = "UIui"
 debiles_tonicas = "ÚÍúí"
 fuertes = "AEOaeo"
 fuertes_tildadas = "ÁÉÓáéó"
 ##############################
-vowels_tildadas = 'áéíóúÁÉÍÓÚ'
+vowels_tildadas = "áéíóúÁÉÍÓÚ"
 punct = "!\"#$%&'()*+,./:;<=>?@[\]^_`{|}~"
 capitals = string.ascii_uppercase
 
 
-class Syllabifier():
+class Syllabifier:
     def __init__(self, sentence):
         self.sentence = sentence.strip(".,¿?¡!«'—»();:\"-* ")
         self.syllabified_sentence = self.syllabify(self.sentence)
         self.syllables, self.agullaesdr = self.counter(self.syllabified_sentence)
-        self.consonant_rhyme, self.asonant_rhyme = self.rhymer(self.syllabified_sentence)
+        self.consonant_rhyme, self.asonant_rhyme = self.rhymer(
+            self.syllabified_sentence
+        )
         self.beg = self.is_beg(sentence)
         self.end = self.is_end(sentence)
         self.int = self.is_int(sentence)
@@ -54,7 +57,10 @@ class Syllabifier():
 
                 elif len(block) == 2:
                     try:
-                        if block[0] in "hH" and syllabified_sentence.strip()[-1] in vowels:
+                        if (
+                            block[0] in "hH"
+                            and syllabified_sentence.strip()[-1] in vowels
+                        ):
                             syllabified_sentence += block
                             block = ""
                         else:
@@ -88,7 +94,9 @@ class Syllabifier():
                         syllabified_sentence += block[0:3] + "-" + block[3:]
                         block = ""
 
-            elif i == len(sentence) - 1 and (letter in consonants or letter in string.punctuation):
+            elif i == len(sentence) - 1 and (
+                letter in consonants or letter in string.punctuation
+            ):
                 syllabified_sentence += letter
 
         return self.second_scan(syllabified_sentence.strip(".,!?¡¿:;"))
@@ -133,18 +141,18 @@ class Syllabifier():
                         elif block[i + 1] == "h":
                             try:
                                 if block[i + 2] in vowels:
-                                    vowel_block = self.vowel_separator(block[i:i+3])
+                                    vowel_block = self.vowel_separator(block[i : i + 3])
                                     separated_block += vowel_block
                                     i += 3
                                 else:
-                                    separated_block += block[i:i+3]
+                                    separated_block += block[i : i + 3]
                                     i += 3
                             except IndexError:
                                 separated_block += letter
                                 i += 1
 
                         else:
-                            vowel_block = self.vowel_separator(block[i:i+2])
+                            vowel_block = self.vowel_separator(block[i : i + 2])
                             separated_block += vowel_block
                             i += 2
                     except IndexError:
@@ -157,7 +165,7 @@ class Syllabifier():
         return "-" + separated_block
 
     def vowel_separator(self, vowel_block):
-        '''Grupos de 2 o de 3 letras (VV / VHV / VVV)'''
+        """Grupos de 2 o de 3 letras (VV / VHV / VVV)"""
 
         if "h" in vowel_block:
             vocal_uno = vowel_block[0]
@@ -188,9 +196,9 @@ class Syllabifier():
         return sil_count + type, type
 
     def agu_lla_esdr(self, word):
-        '''Returns -1 if esdrújula
-                    0 if llana
-                    1 if aguda'''
+        """Returns -1 if esdrújula
+        0 if llana
+        1 if aguda"""
 
         if not word.startswith("-"):
             word = "-" + word
@@ -220,12 +228,18 @@ class Syllabifier():
 
         if cut_point != -1:
             last_word = verso[cut_point:].strip()
-            consonant_rhyme = self.consonant_rhyme_finder(last_word.strip(punct), self.agullaesdr)
-            asonant_rhyme = self.asonant_rhyme_finder(last_word.strip(punct), self.agullaesdr)
+            consonant_rhyme = self.consonant_rhyme_finder(
+                last_word.strip(punct), self.agullaesdr
+            )
+            asonant_rhyme = self.asonant_rhyme_finder(
+                last_word.strip(punct), self.agullaesdr
+            )
             return consonant_rhyme, asonant_rhyme
 
         word = verso
-        consonant_rhyme = self.consonant_rhyme_finder(word.strip(punct), self.agullaesdr)
+        consonant_rhyme = self.consonant_rhyme_finder(
+            word.strip(punct), self.agullaesdr
+        )
         asonant_rhyme = self.asonant_rhyme_finder(word.strip(punct), self.agullaesdr)
         return consonant_rhyme, asonant_rhyme
 
@@ -235,19 +249,21 @@ class Syllabifier():
         if agullaesdr == -1:
             # esdrújula
             while last_word.count("-") > 3:
-                last_word = last_word[last_word.find("-", 1):]
+                last_word = last_word[last_word.find("-", 1) :]
         elif agullaesdr == 0:
             # llana
             while last_word.count("-") > 2:
-                last_word = last_word[last_word.find("-", 1):]
+                last_word = last_word[last_word.find("-", 1) :]
         else:
             # aguda
             while last_word.count("-") > 1:
-                last_word = last_word[last_word.find("-", 1):]
+                last_word = last_word[last_word.find("-", 1) :]
 
         block_clean = "".join([letter for letter in last_word if letter != "-"])
 
-        if len(block_clean) > 1 and not all(letter in capitals for letter in block_clean):
+        if len(block_clean) > 1 and not all(
+            letter in capitals for letter in block_clean
+        ):
 
             while block_clean[0] not in vowels:
                 if len(block_clean) > 2:
@@ -269,21 +285,23 @@ class Syllabifier():
         if agullaesdr == -1:
             # esdrújula
             while last_word.count("-") > 3:
-                last_word = last_word[last_word.find("-", 1):]
+                last_word = last_word[last_word.find("-", 1) :]
 
         elif agullaesdr == 0:
             # llana
             while last_word.count("-") > 2:
-                last_word = last_word[last_word.find("-", 1):]
+                last_word = last_word[last_word.find("-", 1) :]
 
         else:
             # aguda
             while last_word.count("-") > 1:
-                last_word = last_word[last_word.find("-", 1):]
+                last_word = last_word[last_word.find("-", 1) :]
 
         block_clean = "".join([letter for letter in last_word if letter != "-"])
 
-        if len(block_clean) > 1 and not all(letter in capitals for letter in block_clean):
+        if len(block_clean) > 1 and not all(
+            letter in capitals for letter in block_clean
+        ):
             block_clean = "".join([letter for letter in last_word if letter in vowels])
 
         if block_clean[0] in debiles and block_clean[1] in fuertes:
@@ -309,6 +327,7 @@ class Syllabifier():
         else:
             return False
 
+
 def main():
     sentence = input("Enter word/sentence to syllabify: ")
     syllabifier = Syllabifier(sentence)
@@ -318,6 +337,7 @@ def main():
     print("[+] Aguda, llana o esdrújula?:", syllabifier.agullaesdr)
     print("[+] Bloque consonante a rimar:", syllabifier.consonant_rhyme)
     print("[+] Bloque asonante a rimar:", syllabifier.asonant_rhyme)
+
 
 if __name__ == "__main__":
     main()

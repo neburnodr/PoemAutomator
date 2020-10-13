@@ -45,7 +45,7 @@ def cutting_the_long_verses(verse):
             sub_verse = sub_verse[1:]
         if sub_verse[0] == "¡" and sub_verse.count("!") == 0:
             sub_verse = sub_verse[1:]
-        if sub_verse[0] == "\"" and sub_verse.count("\"") == 1:
+        if sub_verse[0] == '"' and sub_verse.count('"') == 1:
             sub_verse = sub_verse[1:]
         if sub_verse[0] == "«" and sub_verse.count("»") == 0:
             sub_verse = sub_verse[1:]
@@ -59,14 +59,18 @@ def cutting_the_long_verses(verse):
             sub_verse = sub_verse[:-1]
         if sub_verse[-1] == "»" and sub_verse.count("«") == 0:
             sub_verse = sub_verse[:-1]
-        if sub_verse[-1] == "\"" and sub_verse.count("\"") == 1:
+        if sub_verse[-1] == '"' and sub_verse.count('"') == 1:
             sub_verse = sub_verse[:-1]
         if sub_verse[-1] == "!" and sub_verse.count("¡") == 0:
             sub_verse = sub_verse[:-1]
         if sub_verse[-1] == "?" and sub_verse.count("¿") == 0:
             sub_verse = sub_verse[:-1]
 
-        if isinstance(sub_verses, list) and len(sub_verses) > 1 and sub_verse != sub_verses[-1].strip():
+        if (
+            isinstance(sub_verses, list)
+            and len(sub_verses) > 1
+            and sub_verse != sub_verses[-1].strip()
+        ):
             new_verses_list.append(sub_verse + ".")
         else:
             new_verses_list.append(sub_verse)

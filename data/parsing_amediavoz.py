@@ -17,7 +17,7 @@ def getting_the_verses(links):
         html = resp.text.replace("<br>", "\n")
         html = html.replace("\n\t\t", " ")
 
-        soup = bs4.BeautifulSoup(html, 'lxml')
+        soup = bs4.BeautifulSoup(html, "lxml")
 
         titles = soup.select("blockquote blockquote p font a")
         for title in titles:
@@ -61,9 +61,9 @@ def getting_the_verses(links):
                 verses_almost.append(verse)
 
         for verse in verses_almost:
-            verse_new = re.sub("\xa0", ' ', verse)
+            verse_new = re.sub("\xa0", " ", verse)
             patt = re.compile(" +")
-            verse_newest = re.sub(patt, ' ', verse_new)
+            verse_newest = re.sub(patt, " ", verse_new)
             verses_definitive.append(verse_newest)
 
     print("[+] Done", end="\n\n")
@@ -72,27 +72,32 @@ def getting_the_verses(links):
 
 def getting_amediavoz_links(urls):
     links = []
-    discarded_urls = ["http://amediavoz.com/mediavoz.htm",
-                      "http://amediavoz.com/poetas.htm",
-                      "http://amediavoz.com/sensual.htm",
-                      "http://amediavoz.com/ventanas.htm",
-                      "http://amediavoz.com/tucuerpo.htm",
-                      "http://amediavoz.com/traducciones.htm",
-                      "http://amediavoz.com/poesiadeoro.htm",
-                      "http://amediavoz.com/index.htm",
-                      "http://amediavoz.com/indice-A-K.htm",
-                      "http://amediavoz.com/indice-L-Z.htm"
-                      ]
+    discarded_urls = [
+        "http://amediavoz.com/mediavoz.htm",
+        "http://amediavoz.com/poetas.htm",
+        "http://amediavoz.com/sensual.htm",
+        "http://amediavoz.com/ventanas.htm",
+        "http://amediavoz.com/tucuerpo.htm",
+        "http://amediavoz.com/traducciones.htm",
+        "http://amediavoz.com/poesiadeoro.htm",
+        "http://amediavoz.com/index.htm",
+        "http://amediavoz.com/indice-A-K.htm",
+        "http://amediavoz.com/indice-L-Z.htm",
+    ]
 
     for url in urls:
         resp = requests.get(url)
-        soup = bs4.BeautifulSoup(resp.text, 'lxml')
+        soup = bs4.BeautifulSoup(resp.text, "lxml")
 
         anchors = soup.select("font a")
-        anchors = ['http://amediavoz.com' + anchor['href'][1:] for anchor in anchors]
+        anchors = ["http://amediavoz.com" + anchor["href"][1:] for anchor in anchors]
 
         for anchor in anchors:
-            if anchor.endswith(".htm") and anchor not in links and anchor not in discarded_urls:
+            if (
+                anchor.endswith(".htm")
+                and anchor not in links
+                and anchor not in discarded_urls
+            ):
                 links.append(anchor)
 
     return links
@@ -102,9 +107,10 @@ def main():
     links = getting_amediavoz_links(url).extend(getting_amediavoz_links(url2))
     verses = getting_the_verses(links)
 
-    '''
+    """
     saving?
-    saving_the_verses(verses)'''
+    saving_the_verses(verses)"""
+
 
 if __name__ == "__main__":
     main()

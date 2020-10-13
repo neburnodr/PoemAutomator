@@ -5,14 +5,38 @@ import requests
 verses = []
 
 """strings to exclude"""
-roman_numerals = ["I", "II", "III", "IV", "V",
-                  "VI", "VII", "VIII", "IX", "X",
-                  "XI", "XII", "XIII", "XIV", "XV",
-                  "XVI", "XVII", "XVIII", "XIX", "XX",
-                  "XXI", "XXII", "XXIII", "XXIV", "XXV",]
+roman_numerals = [
+    "I",
+    "II",
+    "III",
+    "IV",
+    "V",
+    "VI",
+    "VII",
+    "VIII",
+    "IX",
+    "X",
+    "XI",
+    "XII",
+    "XIII",
+    "XIV",
+    "XV",
+    "XVI",
+    "XVII",
+    "XVIII",
+    "XIX",
+    "XX",
+    "XXI",
+    "XXII",
+    "XXIII",
+    "XXIV",
+    "XXV",
+]
 
 
 """filtering the lines and the tags"""
+
+
 def getting_the_verses(url):
     resp = requests.get(url)
     soup = bs4.BeautifulSoup(resp.text, "lxml")
@@ -30,6 +54,8 @@ def getting_the_verses(url):
 
 
 """parsing the POET-URLS"""
+
+
 def getting_poets(url):
     print("[+] Scraping buscapoemas.net", end="\n\n")
 
@@ -43,27 +69,30 @@ def getting_poets(url):
 
 
 """parsing the POEM-URLS"""
+
+
 def getting_poems(url):
     poet_urls = getting_poets(url)
     poem_urls = []
 
-    exclude_poets = ["https://www.buscapoemas.net/poeta/Alfonso-X-el-Sabio.htm",
-                     "https://www.buscapoemas.net/poeta/Francisco-de-Rojas-Zorrilla.htm",
-                     "https://www.buscapoemas.net/poeta/Fray-Luis-de-León.htm",
-                     "https://www.buscapoemas.net/poeta/Diego-de-Torres-y-Villarroel.htm",
-                     "https://www.buscapoemas.net/poeta/Cristóbal-de-Castillejo.htm",
-                     "https://www.buscapoemas.net/poeta/Bartolomé-de-Argensola.htm",
-                     "https://www.buscapoemas.net/poeta/Baltasar-del-Alcázar.htm",
-                     "https://www.buscapoemas.net/poeta/Gonzalo-de-Berceo.htm",
-                     "https://www.buscapoemas.net/poeta/Gutierre-de-Cetina.htm",
-                     "https://www.buscapoemas.net/poeta/Jorge-Manrique.htm",
-                     "https://www.buscapoemas.net/poeta/Juan-Boscán.htm",
-                     "https://www.buscapoemas.net/poeta/Juan-Ruiz-Arcipreste-de-Hita.htm",
-                     "https://www.buscapoemas.net/poeta/Juan-de-Tassis-y-Peralta.htm",
-                     "https://www.buscapoemas.net/poeta/Marqués-de-Santillana.htm",
-                     "https://www.buscapoemas.net/poeta/San-Juan-de-la-Cruz.htm",
-                     "https://www.buscapoemas.net/poeta/Tirso-de-Molina.htm",
-                     ]
+    exclude_poets = [
+        "https://www.buscapoemas.net/poeta/Alfonso-X-el-Sabio.htm",
+        "https://www.buscapoemas.net/poeta/Francisco-de-Rojas-Zorrilla.htm",
+        "https://www.buscapoemas.net/poeta/Fray-Luis-de-León.htm",
+        "https://www.buscapoemas.net/poeta/Diego-de-Torres-y-Villarroel.htm",
+        "https://www.buscapoemas.net/poeta/Cristóbal-de-Castillejo.htm",
+        "https://www.buscapoemas.net/poeta/Bartolomé-de-Argensola.htm",
+        "https://www.buscapoemas.net/poeta/Baltasar-del-Alcázar.htm",
+        "https://www.buscapoemas.net/poeta/Gonzalo-de-Berceo.htm",
+        "https://www.buscapoemas.net/poeta/Gutierre-de-Cetina.htm",
+        "https://www.buscapoemas.net/poeta/Jorge-Manrique.htm",
+        "https://www.buscapoemas.net/poeta/Juan-Boscán.htm",
+        "https://www.buscapoemas.net/poeta/Juan-Ruiz-Arcipreste-de-Hita.htm",
+        "https://www.buscapoemas.net/poeta/Juan-de-Tassis-y-Peralta.htm",
+        "https://www.buscapoemas.net/poeta/Marqués-de-Santillana.htm",
+        "https://www.buscapoemas.net/poeta/San-Juan-de-la-Cruz.htm",
+        "https://www.buscapoemas.net/poeta/Tirso-de-Molina.htm",
+    ]
 
     for poet_url in poet_urls:
         if poet_url not in exclude_poets:
@@ -78,6 +107,8 @@ def getting_poems(url):
 
 
 """Main programm"""
+
+
 def main():
     url = "https://www.buscapoemas.net/poetas.html"
     alt = input("alternative url? [Y/N]")

@@ -1,16 +1,18 @@
 import psycopg2
 import csv
 import getpass
+
 save_csv_path = "/home/nebur/Desktop/poemautomator/data"
 
 
 def check_if_db_exists():
     conn = None
 
-    conn = psycopg2.connect(user="postgres",
-                            host="localhost",
-                            password=getpass.getpass(),
-                            port="5432",
+    conn = psycopg2.connect(
+        user="postgres",
+        host="localhost",
+        password=getpass.getpass(),
+        port="5432",
     )
 
     if conn is not None:
@@ -42,11 +44,12 @@ def create_db():
 
     conn = None
 
-    conn = psycopg2.connect(user="postgres",
-                            host="localhost",
-                            password=getpass.getpass(),
-                            port="5432",
-                            )
+    conn = psycopg2.connect(
+        user="postgres",
+        host="localhost",
+        password=getpass.getpass(),
+        port="5432",
+    )
 
     conn.autocommit = True
     cur = conn.cursor()
@@ -61,22 +64,25 @@ def create_db():
 def check_if_table_exists():
     conn = None
 
-    conn = psycopg2.connect(user="postgres",
-                            host="localhost",
-                            password=getpass.getpass(),
-                            database="verses_db",
-                            port="5432",
-                            )
+    conn = psycopg2.connect(
+        user="postgres",
+        host="localhost",
+        password=getpass.getpass(),
+        database="verses_db",
+        port="5432",
+    )
 
     conn.autocommit = True
     cur = conn.cursor()
 
     tablename = "verses"
 
-    cur.execute("""SELECT EXISTS (
+    cur.execute(
+        """SELECT EXISTS (
                                    select from pg_tables
                                    where tablename = '{}');                  
-    """.format(tablename))
+    """.format(tablename)
+    )
 
     exists = cur.fetchall()[0][0]
 
@@ -94,18 +100,20 @@ def create_db_table():
 
     conn = None
 
-    conn = psycopg2.connect(user="postgres",
-                            host="localhost",
-                            password=getpass.getpass(),
-                            port="5432",
-                            database="verses_db",
-                            )
+    conn = psycopg2.connect(
+        user="postgres",
+        host="localhost",
+        password=getpass.getpass(),
+        port="5432",
+        database="verses_db",
+    )
 
     conn.autocommit = True
 
     cur = conn.cursor()
 
-    cur.execute("""CREATE TABLE verses(
+    cur.execute(
+        """CREATE TABLE verses(
                 id integer,
                 verse text,
                 long integer,
@@ -114,7 +122,8 @@ def create_db_table():
                 beg_verse bool,
                 int_verse bool,
                 fin_verse bool);
-                """)
+                """
+    )
 
     conn.close()
 
