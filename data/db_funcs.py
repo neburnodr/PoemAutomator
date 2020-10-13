@@ -1,8 +1,6 @@
 import psycopg2
 import csv
 import getpass
-from os import path
-import sys
 save_csv_path = "/home/nebur/Desktop/poemautomator/data"
 
 
@@ -124,13 +122,6 @@ def create_db_table():
 
 
 def csv_file_creator(verse):
-    if not path.exists(f"{save_csv_path}/verse_list.csv"):
-        f = open(f"{save_csv_path}/verse_list.csv", "w")
+    with open(f"{save_csv_path}/verse_list.csv", "a") as f:
         writer = csv.writer(f)
         writer.writerow(verse)
-        f.close()
-
-    else:
-        with open(f"{save_csv_path}/verse_list.csv", "a") as f:
-            writer = csv.writer(f)
-            writer.writerow(verse)
