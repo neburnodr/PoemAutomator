@@ -304,9 +304,6 @@ class Syllabifier:
         ):
             block_clean = "".join([letter for letter in last_word if letter in vowels])
 
-        if block_clean[0] in debiles and block_clean[1] in fuertes:
-            block_clean = block_clean[1:]
-
         return block_clean
 
     def is_beg(self, sentence):
