@@ -81,7 +81,7 @@ def main():
 
     else:
         pg_username = input("Enter username to use for PostgreSQL: ")
-        pg_pwd = getpass.getpass("Enter password for given user: ")
+        pg_pwd = getpass.getpass(prompt="Enter password for given user: ", stream=None)
         database_name = input("Enter name of the DB to be created: ")
         tablename = "verses"
 
@@ -97,7 +97,6 @@ def main():
 
         print("[+] Requirements satisfied. Starting the poem generator...", end="\n\n")
         poem_creator.create_poem()
-
 
 if __name__ == "__main__":
     main()
