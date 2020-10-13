@@ -14,14 +14,14 @@ def clean_verses(verses):
             for cutted_verse in cutted_verses:
 
                 if len(cutted_verse) < 50:
-                    new_verses_list.append(verse)
+                    new_verses_list.append(cutted_verse)
 
                 else:
                     recutted_verses = recutting_the_still_long_verses(cutted_verse)
 
                     for recutted in recutted_verses:
 
-                        if len(recutted) < 50:
+                        if len(recutted) < 60:
                             new_verses_list.append(recutted)
 
                         else:
@@ -34,8 +34,10 @@ def clean_verses(verses):
 def cutting_the_long_verses(verse):
     new_verses_list = []
 
-    sub_verses = verse.split(". ")
+    sub_verses = verse.split(".")
     for sub_verse in sub_verses:
+        sub_verse = sub_verse.strip()
+
         if len(sub_verse) < 5:
             continue
 
@@ -64,7 +66,7 @@ def cutting_the_long_verses(verse):
         if sub_verse[-1] == "?" and sub_verse.count("¿") == 0:
             sub_verse = sub_verse[:-1]
 
-        if not sub_verse.endswith("."):
+        if isinstance(sub_verses, list) and len(sub_verses) > 1 and sub_verse != sub_verses[-1].strip():
             new_verses_list.append(sub_verse + ".")
         else:
             new_verses_list.append(sub_verse)
