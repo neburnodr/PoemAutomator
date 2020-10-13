@@ -7,3 +7,4 @@
 
 **/data/verse_list.csv
 **/data/verses.txt
+**/tests/test_clean.py
