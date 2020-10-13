@@ -1,7 +1,6 @@
 **/.idea/workspace.xml 
 **/.idea/tasks.xml
 **/.pytest_cache/
-**/automator/__pycache__/poem_creator.cpython-38.pyc
 **/automator/__pycache__/
 **/data/__pycache__/
 **/tests/__pycache__/
