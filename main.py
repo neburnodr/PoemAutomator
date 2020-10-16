@@ -1,4 +1,4 @@
-from data import parsing_amediavoz, parsing_buscapoemas, db_funcs
+from data import scraping_amediavoz, scraping_buscapoemas, db_funcs
 from data.processing_verses import clean_verses
 from data.analyse_verses import Syllabifier
 from automator import poem_creator
@@ -68,29 +68,29 @@ def get_verses() -> List[str]:
     """Scraping Amediavoz and Buscapoemas"""
 
     print("[+] Getting the poet urls from amediavoz.com")
-    urls_poets_amediavoz = parsing_amediavoz.getting_amediavoz_links(urls[:2])
+    urls_poets_amediavoz = scraping_amediavoz.getting_amediavoz_links(urls[:2])
     print("[+] Done\n")
 
-    verses = parsing_amediavoz.getting_the_verses(urls_poets_amediavoz)
+    verses = scraping_amediavoz.getting_the_verses(urls_poets_amediavoz)
     print("[+] Done scraping amediavoz.com")
     print("_____________________________________________________________\n")
 
     print("[+] Getting the poet urls from buscapoemas.net")
-    urls_poets = parsing_buscapoemas.getting_poets(urls[2])
+    urls_poets = scraping_buscapoemas.getting_poets(urls[2])
 
     counter = 0
     for poet_url in urls_poets:
-        if poet_url in parsing_buscapoemas.exclude_poets:
+        if poet_url in scraping_buscapoemas.exclude_poets:
             continue
 
         poet_path = poet_url[34:-4]
         counter += 1
-        urls_poems = parsing_buscapoemas.getting_poems(poet_url, poet_path)
+        urls_poems = scraping_buscapoemas.getting_poems(poet_url, poet_path)
 
         print(f"\n[+] [1/{len(urls_poets)}] Extracting the verses from {poet_url}\n")
         for poem_url in urls_poems:
             print("\t[+] Extracting {}".format(poem_url))
-            verses.extend(parsing_buscapoemas.getting_the_verses(poem_url, poet_path))
+            verses.extend(scraping_buscapoemas.getting_the_verses(poem_url, poet_path))
 
     print("[+] Done", end="\n\n")
 
