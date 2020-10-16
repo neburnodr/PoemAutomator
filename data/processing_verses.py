@@ -1,11 +1,11 @@
 def clean_verses(verses):
-    print("[+] Processing the scraped verses")
+    print("[+] Processing the scraped verses...")
 
     new_verses_list = []
 
     for verse in verses:
 
-        if len(verse) < 50:
+        if len(verse) < 60:
             new_verses_list.append(verse)
 
         else:
@@ -13,7 +13,7 @@ def clean_verses(verses):
 
             for cutted_verse in cutted_verses:
 
-                if len(cutted_verse) < 50:
+                if len(cutted_verse) < 60:
                     new_verses_list.append(cutted_verse)
 
                 else:
@@ -21,14 +21,14 @@ def clean_verses(verses):
 
                     for recutted in recutted_verses:
 
-                        if len(recutted) < 60:
+                        if len(recutted) < 70:
                             new_verses_list.append(recutted)
 
                         else:
                             pass
 
     print("[+] Done processing the verses", end="\n\n")
-    return new_verses_list
+    return removing_junk(new_verses_list)
 
 
 def cutting_the_long_verses(verse):

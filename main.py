@@ -28,7 +28,6 @@ def fetch_data() -> None:
         with open("data/raw_verses.txt") as f:
             verses = f.read().split("\n")
 
-        print("[+] Processing the verses...")
         cleaned_verses = clean_verses(verses)
 
         print("[+] Saving the cleaned verses in 'verses.txt'")
