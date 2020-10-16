@@ -5,6 +5,10 @@
 **/data/__pycache__/
 **/tests/__pycache__/
 
+**/data/buscapoemas/
+**/data/amediavoz/
+
 **/data/verse_list.csv
 **/data/verses.txt
+**/data/raw_verses.txt
 **/tests/testing_clean.py
