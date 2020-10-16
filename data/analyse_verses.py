@@ -12,7 +12,7 @@ fuertes = "AEOaeo"
 fuertes_tildadas = "ÁÉÓáéó"
 ##############################
 vowels_tildadas = "áéíóúÁÉÍÓÚ"
-punct = "!\"#$%&'()*+,./:;<=>?@[\]^_`{|}~"
+punct = "!\"#$%&'()*+,./:;<=>?@[\\]^_`{|}~"
 capitals = string.ascii_uppercase
 
 
@@ -60,6 +60,7 @@ class Syllabifier:
                         if (
                             block[0] in "hH"
                             and syllabified_sentence.strip()[-1] in vowels
+                            and (not sentence[i+1] in fuertes or sentence[i+1] in debiles_tonicas)
                         ):
                             syllabified_sentence += block
                             block = ""
@@ -240,7 +241,7 @@ class Syllabifier:
         consonant_rhyme = self.consonant_rhyme_finder(
             word.strip(punct), self.agullaesdr
         )
-        asonant_rhyme = self.asonant_rhyme_finder(word.strip(punct), self.agullaesdr)
+        asonant_rhyme = self.asonant_rhyme_finder(consonant_rhyme)
         return consonant_rhyme, asonant_rhyme
 
     def consonant_rhyme_finder(self, last_word, agullaesdr):
@@ -267,44 +268,27 @@ class Syllabifier:
 
             while block_clean[0] not in vowels:
                 if len(block_clean) > 2:
-                    if block_clean[0].lower() in "qg" and block_clean[1].lower() == "u":
+                    if block_clean[0].lower() in "qg" and (
+                            block_clean[1].lower() == "u" and (
+                            block_clean[2].lower() in "ieíé")):
                         block_clean = block_clean[2:]
 
                     else:
                         block_clean = block_clean[1:]
+                else:
+                    block_clean = block_clean[1:]
 
-            if block_clean[0] in debiles and block_clean[1] in fuertes:
+            if (len(block_clean) > 1
+                and block_clean[0] in debiles
+                and block_clean[1] in fuertes
+            ):
                 block_clean = block_clean[1:]
 
         return block_clean
 
-    def asonant_rhyme_finder(self, last_word, agullaesdr):
-        if not last_word.startswith("-"):
-            last_word = "-" + last_word
-
-        if agullaesdr == -1:
-            # esdrújula
-            while last_word.count("-") > 3:
-                last_word = last_word[last_word.find("-", 1) :]
-
-        elif agullaesdr == 0:
-            # llana
-            while last_word.count("-") > 2:
-                last_word = last_word[last_word.find("-", 1) :]
-
-        else:
-            # aguda
-            while last_word.count("-") > 1:
-                last_word = last_word[last_word.find("-", 1) :]
-
-        block_clean = "".join([letter for letter in last_word if letter != "-"])
-
-        if len(block_clean) > 1 and not all(
-            letter in capitals for letter in block_clean
-        ):
-            block_clean = "".join([letter for letter in last_word if letter in vowels])
-
-        return block_clean
+    def asonant_rhyme_finder(self, consonant_rhyme):
+        asonant_rhyme = "".join([letter for letter in consonant_rhyme if letter in vowels])
+        return asonant_rhyme
 
     def is_beg(self, sentence):
         if sentence.capitalize() == sentence:

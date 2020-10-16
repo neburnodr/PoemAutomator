@@ -125,12 +125,12 @@ def create_db_table(user, pwd, database_name, tablename):
 
     conn.close()
 
-    print("[+] Table {} created in {}.".format(tablename,
+    print("[+] Table '{}' created in '{}'.".format(tablename,
                                                database_name))
 
 
 def delete_rows_from_table(user, pwd, database, tablename):
-    print("[+] Deleting all rows from {} in {}".format(tablename,
+    print("[+] Deleting all rows from '{}' in '{}'".format(tablename,
                                                        database))
 
     conn = None
@@ -151,7 +151,7 @@ def delete_rows_from_table(user, pwd, database, tablename):
 
     conn.close()
 
-    print("[+] Table {} in {} is now clean for repopulating".format(tablename,
+    print("[+] Table '{}' in '{}' is now clean for repopulating".format(tablename,
                                                                     database))
 
 
@@ -159,3 +159,28 @@ def csv_file_creator(verse):
     with open(f"{save_csv_path}/verse_list.csv", "a") as f:
         writer = csv.writer(f)
         writer.writerow(verse)
+
+
+def import_csv_to_db(user, pwd, database, tablename):
+    print("[+] importing CSV file to '{}'".format(database))
+
+    conn = None
+
+    conn = psycopg2.connect(
+        user=user,
+        host="localhost",
+        password=pwd,
+        port="5432",
+        database=database,
+    )
+
+    conn.autocommit = True
+
+    cur = conn.cursor()
+
+    cur.execute(f"""COPY {tablename} FROM '/home/nebur/Desktop/poemautomator/data/verse_list.csv' WITH (FORMAT csv);""")
+
+    conn.close()
+
+    print("[+] Done copying CSV file to database '{}'".format(database))
+
