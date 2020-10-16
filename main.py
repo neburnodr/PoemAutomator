@@ -14,13 +14,23 @@ urls = [
 
 
 def fetch_data() -> None:
-    if not path.exists("data/verses.txt"):
+    if not path.exists("data/raw_verses.txt"):
 
         print("[+] Starting the webscraping process to create a database of verses...")
         verses = get_verses()
+
+        print("[+] Saving the raw verses in 'raw_verses.txt'")
+
+        with open("data/raw_verses.txt", "w") as f:
+            f.write("\n".join(verses))
+
+    if not path.exists("data/verses.txt"):
+        with open("data/raw_verses.txt") as f:
+            verses = f.read().split("\n")
+
         cleaned_verses = clean_verses(verses)
 
-        print("[+] Saving the verses in a .txt file")
+        print("[+] Saving the cleaned verses in 'verses.txt'")
         with open("data/verses.txt", "w") as f:
             f.write("\n".join(cleaned_verses))
 
@@ -42,10 +52,12 @@ def fetch_data() -> None:
             analysed_verse.syllables,
             analysed_verse.consonant_rhyme,
             analysed_verse.asonant_rhyme,
+            analysed_verse.last_word,
             analysed_verse.beg,
             analysed_verse.end,
             analysed_verse.int,
-        ]ace
+
+        ]
 
 
         db_funcs.csv_file_creator(ready_verse)
@@ -53,21 +65,32 @@ def fetch_data() -> None:
     print("[+] Done analysing the verses. CSV File ready to use.")
 
 def get_verses() -> List[str]:
+    """Scraping Amediavoz and Buscapoemas"""
+
     print("[+] Getting the poet urls from amediavoz.com")
     urls_poets_amediavoz = parsing_amediavoz.getting_amediavoz_links(urls[:2])
-    print("[+] Done", end="\n\n")
+    print("[+] Done\n")
 
     verses = parsing_amediavoz.getting_the_verses(urls_poets_amediavoz)
-    print("[+] Done scraping amediavoz.com", end="\n\n")
-    print("_____________________________________________________________", end="\n\n")
+    print("[+] Done scraping amediavoz.com")
+    print("_____________________________________________________________\n")
 
-    urls_poems_buscapoemas = parsing_buscapoemas.getting_poems(urls[2])
+    print("[+] Getting the poet urls from buscapoemas.net")
+    urls_poets = parsing_buscapoemas.getting_poets(urls[2])
 
-    print("")
-    print("[+] Extracting the verses")
-    for poem_url in urls_poems_buscapoemas:
-        print("[+] Extracting {}".format(poem_url))
-        verses.extend(parsing_buscapoemas.getting_the_verses(poem_url))
+    counter = 0
+    for poet_url in urls_poets:
+        if poet_url in parsing_buscapoemas.exclude_poets:
+            continue
+
+        poet_path = poet_url[34:-4]
+        counter += 1
+        urls_poems = parsing_buscapoemas.getting_poems(poet_url, poet_path)
+
+        print(f"\n[+] [1/{len(urls_poets)}] Extracting the verses from {poet_url}\n")
+        for poem_url in urls_poems:
+            print("\t[+] Extracting {}".format(poem_url))
+            verses.extend(parsing_buscapoemas.getting_the_verses(poem_url, poet_path))
 
     print("[+] Done", end="\n\n")
 

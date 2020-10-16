@@ -27,6 +27,7 @@ class Syllabifier:
         self.beg = self.is_beg(sentence)
         self.end = self.is_end(sentence)
         self.int = self.is_int(sentence)
+        self.last_word = self.last_word_finder(sentence)
 
     def syllabify(self, sentence):
         block = ""
@@ -225,21 +226,10 @@ class Syllabifier:
         return 1
 
     def rhymer(self, verso):
-        cut_point = verso.rfind(" ")
+        last_word = self.last_word_finder(verso)
 
-        if cut_point != -1:
-            last_word = verso[cut_point:].strip()
-            consonant_rhyme = self.consonant_rhyme_finder(
-                last_word.strip(punct), self.agullaesdr
-            )
-            asonant_rhyme = self.asonant_rhyme_finder(
-                last_word.strip(punct), self.agullaesdr
-            )
-            return consonant_rhyme, asonant_rhyme
-
-        word = verso
         consonant_rhyme = self.consonant_rhyme_finder(
-            word.strip(punct), self.agullaesdr
+            last_word.strip(punct), self.agullaesdr
         )
         asonant_rhyme = self.asonant_rhyme_finder(consonant_rhyme)
         return consonant_rhyme, asonant_rhyme
@@ -307,6 +297,17 @@ class Syllabifier:
             return True
         else:
             return False
+
+    def last_word_finder(self, sentence):
+        if sentence.count(" ") != 0:
+            return decapitalize(sentence[sentence.rfind(" "):].strip(punct))
+
+        return decapitalize(sentence.strip(punct))
+
+    def decapitalize(self, strg, strict=True):
+        if strict:
+            return strg.lower()
+        return strg[0].lower() + strg[1:]
 
 
 def main():

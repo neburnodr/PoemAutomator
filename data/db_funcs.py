@@ -115,6 +115,7 @@ def create_db_table(user, pwd, database_name, tablename):
                 long integer,
                 consonant_rhyme text,
                 asonant_rhyme text,
+                last_word text,
                 beg_verse bool,
                 int_verse bool,
                 fin_verse bool,
