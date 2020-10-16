@@ -61,23 +61,31 @@ exclude_poets = [
 
 def getting_the_verses(poem_url, poet_path):
     """filtering the lines and the tags"""
+
+    print("\t[+] Extracting {}".format(poem_url))
+
     poem_name = poem_url[34:]
     poem_name = poem_name[:poem_name.find("/")]
 
-    resp = requests.get(poem_url)
-    soup = bs4.BeautifulSoup(resp.text, "lxml")
+    try:
+        with open(f"{path}/{poet_path}/{poem_name}.txt") as f:
+            verses_poem = f.read().split("\n")
 
-    poem = soup.select("#poema_contenedor_poema")[0]
+    except FileNotFoundError:
+        resp = requests.get(poem_url)
+        soup = bs4.BeautifulSoup(resp.text, "lxml")
 
-    verses_poem = []
-    for elem in poem:
-        if isinstance(elem, bs4.element.NavigableString):
-            if str(elem) not in roman_numerals and str(elem).upper() != str(elem):
-                verso = str(elem).replace("\xa0", " ").strip()
-                verses_poem.append(verso)
+        poem = soup.select("#poema_contenedor_poema")[0]
 
-    with open(f"{path}/{poet_path}/{poem_name}.txt", "w") as f:
-        print("\n".join(verses_poem), file=f)
+        verses_poem = []
+        for elem in poem:
+            if isinstance(elem, bs4.element.NavigableString):
+                if str(elem) not in roman_numerals and str(elem).upper() != str(elem):
+                    verso = str(elem).replace("\xa0", " ").strip()
+                    verses_poem.append(verso)
+
+        with open(f"{path}/{poet_path}/{poem_name}.txt", "w") as f:
+            print("\n".join(verses_poem), file=f)
 
     return verses_poem
 
@@ -87,6 +95,8 @@ def getting_poets(buscapoemas_url):
 
     if not os.path.exists(path):
         os.mkdir(path)
+
+    print("[+] Getting the poet-urls from buscapoemas.net")
 
     resp = requests.get(buscapoemas_url)
     soup = bs4.BeautifulSoup(resp.text, "lxml")
@@ -116,7 +126,7 @@ def getting_poems(poet_url, poet_path):
 
 def main():
     url = "https://www.buscapoemas.net/poetas.html"
-    alt = input("alternative url? [Y/N]")
+    alt = input("alternative url1? [Y/N]")
     if alt.capitalize() == "Y":
         url = input("URL to input: ")
 
