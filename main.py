@@ -82,7 +82,8 @@ def scrape_verses() -> List[str]:
         counter += 1
         urls_poems = scraping_buscapoemas.getting_poems(poet_url, poet_path)
 
-        print(f"\n[+] [{counter}/{len(urls_poets)}] Extracting the verses from {poet_url}\n")
+        print(f"\n[+] [{counter}/{len(urls_poets) - len(scraping_buscapoemas.exclude_poets)}] "
+              f"Extracting the verses from {poet_url}\n")
         for poem_url in urls_poems:
             verses.extend(scraping_buscapoemas.getting_the_verses(poem_url, poet_path))
 

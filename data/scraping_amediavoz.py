@@ -31,7 +31,7 @@ def getting_the_verses(poet_urls):
 
         try:
             with open(f"{path}/amediavoz/{poet_name}/verses_{poet_name}.txt") as f:
-                print("[+] Retrieving verses from {poet_name} from file")
+                print(f"[+] Retrieving verses from {poet_name} from file")
                 verses_poet = f.read().split("\n")
                 verses_definitive.extend(verses_poet)
 

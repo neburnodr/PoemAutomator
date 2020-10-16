@@ -62,16 +62,17 @@ exclude_poets = [
 def getting_the_verses(poem_url, poet_path):
     """filtering the lines and the tags"""
 
-    print("\t[+] Extracting {}".format(poem_url))
-
     poem_name = poem_url[34:]
     poem_name = poem_name[:poem_name.find("/")]
 
     try:
         with open(f"{path}/{poet_path}/{poem_name}.txt") as f:
+            print("\t[+] Retrieving {} from txt-file".format(poem_url))
             verses_poem = f.read().split("\n")
 
     except FileNotFoundError:
+        print("\t[+] Scraping {}".format(poem_url))
+
         resp = requests.get(poem_url)
         soup = bs4.BeautifulSoup(resp.text, "lxml")
 
@@ -105,7 +106,7 @@ def getting_poets(buscapoemas_url):
     links = [href for href in hrefs if "/poeta/" in href]
     poet_urls = set(links)
 
-    return poet_urls
+    return list(poet_urls).sort()
 
 
 def getting_poems(poet_url, poet_path):
