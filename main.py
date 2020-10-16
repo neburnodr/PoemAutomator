@@ -17,17 +17,18 @@ def fetch_data() -> None:
     if not path.exists("data/raw_verses.txt"):
 
         print("[+] Starting the webscraping process to create a database of verses...")
-        verses = get_verses()
+        verses = scrape_verses()
 
         print("[+] Saving the raw verses in 'raw_verses.txt'")
-
         with open("data/raw_verses.txt", "w") as f:
             f.write("\n".join(verses))
 
     if not path.exists("data/verses.txt"):
+        print("[+] Retrieving the verses from 'raw_verses.txt")
         with open("data/raw_verses.txt") as f:
             verses = f.read().split("\n")
 
+        print("[+] Processing the verses...")
         cleaned_verses = clean_verses(verses)
 
         print("[+] Saving the cleaned verses in 'verses.txt'")
@@ -59,23 +60,17 @@ def fetch_data() -> None:
 
         ]
 
-
         db_funcs.csv_file_creator(ready_verse)
 
     print("[+] Done analysing the verses. CSV File ready to use.")
 
-def get_verses() -> List[str]:
+
+def scrape_verses() -> List[str]:
     """Scraping Amediavoz and Buscapoemas"""
-
-    print("[+] Getting the poet urls from amediavoz.com")
     urls_poets_amediavoz = scraping_amediavoz.getting_amediavoz_links(urls[:2])
-    print("[+] Done\n")
-
     verses = scraping_amediavoz.getting_the_verses(urls_poets_amediavoz)
-    print("[+] Done scraping amediavoz.com")
-    print("_____________________________________________________________\n")
 
-    print("[+] Getting the poet urls from buscapoemas.net")
+    # Scraping Buscapoemas
     urls_poets = scraping_buscapoemas.getting_poets(urls[2])
 
     counter = 0
@@ -87,9 +82,8 @@ def get_verses() -> List[str]:
         counter += 1
         urls_poems = scraping_buscapoemas.getting_poems(poet_url, poet_path)
 
-        print(f"\n[+] [1/{len(urls_poets)}] Extracting the verses from {poet_url}\n")
+        print(f"\n[+] [{counter}/{len(urls_poets)}] Extracting the verses from {poet_url}\n")
         for poem_url in urls_poems:
-            print("\t[+] Extracting {}".format(poem_url))
             verses.extend(scraping_buscapoemas.getting_the_verses(poem_url, poet_path))
 
     print("[+] Done", end="\n\n")
@@ -122,10 +116,11 @@ def main() -> None:
         db_funcs.delete_rows_from_table(pg_username, pg_pwd, database_name, tablename)
         fetch_data()
 
-        db_funcs.import_csv_to_db(pg_username,pg_pwd, database_name, tablename)
+        db_funcs.import_csv_to_db(pg_username, pg_pwd, database_name, tablename)
 
         print("[+] Requirements satisfied. Starting the poem generator...", end="\n\n")
         poem_creator.create_poem()
+
 
 if __name__ == "__main__":
     main()
