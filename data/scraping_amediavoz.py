@@ -1,19 +1,28 @@
 import requests
 import bs4
 import re
+import os
 
 url = "http://amediavoz.com/indice-A-K.htm"
 url2 = "http://amediavoz.com/indice-L-Z.htm"
 
 
-def getting_the_verses(links):
+path = "/home/nebur/Desktop/poemautomator/data"
+
+
+def getting_the_verses(poet_urls):
     verses_definitive = []
 
-    for link in links:
+    for url_poet in poet_urls:
+        verses_poet = []
 
-        print(f"[+] Scraping {link}")
+        poet_name = url_poet[url_poet.rfind("/") + 1:url_poet.rfind(".")]
+        if not os.path.exists(f"{path}/{poet_name}"):
+            os.mkdir(f"{path}/{poet_name}")
 
-        resp = requests.get(link)
+        print(f"[+] Scraping {url_poet}")
+
+        resp = requests.get(url_poet)
         html = resp.text.replace("<br>", "\n")
         html = html.replace("\n\t\t", " ")
 
@@ -64,13 +73,21 @@ def getting_the_verses(links):
             verse_new = re.sub("\xa0", " ", verse)
             patt = re.compile(" +")
             verse_newest = re.sub(patt, " ", verse_new)
-            verses_definitive.append(verse_newest)
+
+            verses_poet.append(verse_newest)
+
+        verses_definitive.extend(verses_poet)
+        with open(f"{path}/{poet_name}/verses_{poet_name}.txt", "w") as f:
+            print("\n".join(verses_poet), file=f)
 
     print("[+] Done", end="\n\n")
     return verses_definitive
 
 
 def getting_amediavoz_links(urls):
+    if not os.path.exists(path):
+        os.mkdir(path)
+
     links = []
     discarded_urls = [
         "http://amediavoz.com/mediavoz.htm",
@@ -85,8 +102,8 @@ def getting_amediavoz_links(urls):
         "http://amediavoz.com/indice-L-Z.htm",
     ]
 
-    for url in urls:
-        resp = requests.get(url)
+    for amedia_url in urls:
+        resp = requests.get(amedia_url)
         soup = bs4.BeautifulSoup(resp.text, "lxml")
 
         anchors = soup.select("font a")
@@ -106,10 +123,7 @@ def getting_amediavoz_links(urls):
 def main():
     links = getting_amediavoz_links(url).extend(getting_amediavoz_links(url2))
     verses = getting_the_verses(links)
-
-    """
-    saving?
-    saving_the_verses(verses)"""
+    print(verses)
 
 
 if __name__ == "__main__":
