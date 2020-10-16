@@ -300,9 +300,8 @@ class Syllabifier:
 
     def last_word_finder(self, sentence):
         if sentence.count(" ") != 0:
-            return decapitalize(sentence[sentence.rfind(" "):].strip(punct))
-
-        return decapitalize(sentence.strip(punct))
+            return self.decapitalize(sentence[sentence.rfind(" "):].strip(punct))
+        return self.decapitalize(sentence.strip(punct))
 
     def decapitalize(self, strg, strict=True):
         if strict:
