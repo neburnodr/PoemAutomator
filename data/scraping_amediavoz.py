@@ -4,7 +4,8 @@ import re
 import os
 
 amediavoz_urls = ["http://amediavoz.com/indice-A-K.htm",
-                  "http://amediavoz.com/indice-L-Z.htm"]
+                  "http://amediavoz.com/indice-L-Z.htm",
+                  "http://amediavoz.com"]
 
 path = "/home/nebur/Desktop/poemautomator/data"
 
@@ -36,63 +37,98 @@ def getting_the_verses(poet_urls):
                 verses_definitive.extend(verses_poet)
 
         except FileNotFoundError:
-            os.mkdir(f"{path}/amediavoz/{poet_name}")
-
-            print(f"[+] Scraping {url_poet}")
-
             resp = requests.get(url_poet)
+
+            if resp.status_code != 200:
+                print(f"[-] ERROR {resp.status_code}: Not scraping {url_poet}")
+                continue
+
             html = resp.text.replace("<br>", "\n")
             html = html.replace("\n\t\t", " ")
+            html = html.replace("\n\t", " ")
 
             soup = bs4.BeautifulSoup(html, "lxml")
 
-            titles = soup.select("blockquote blockquote p font a")
-            for title in titles:
-                title.extract()
+            if soup.title.text == "This site is temporarily unavailable":
+                print(f"[-] ERROR: The site {url_poet} is temporarily unavailable")
+                continue
 
-            paragraphs = soup.select("blockquote blockquote p")
-            for paragraph in paragraphs:
-                if "Versión de" in paragraph.text:
-                    paragraph.extract()
+            print(f"[+] Scraping {url_poet}")
 
-            blockquotes = soup.select("blockquote blockquote")
-            poems = ""
+            try:
+                os.mkdir(f"{path}/amediavoz/{poet_name}")
+            except FileExistsError:
+                pass
 
-            for blockquote in blockquotes:
-                block = blockquote.text
-                if len(block) > len(poems):
-                    poems = block
+            longest_block = ""
+            blockquotes = soup.select("blockquote")
+            for block in blockquotes:
+                if len(block) > len(longest_block):
+                    longest_block = block
 
-            verses = poems.split("\n")
+            tables = longest_block.select("table")
+            for table in tables:
+                table.extract()
 
-            verses_clean = [verse.strip("\n\xa0") for verse in verses]
+            emphasized = longest_block.select("p font em")
+            for elem in emphasized:
+                elem.extract()
 
-            verses_almost = []
-            for verse in verses_clean:
+            cursives = longest_block.select("p font i")
+            for elem in cursives:
+                elem.extract()
+
+            fonts = longest_block.select("p font")
+
+            for font in fonts:
+                if (font.a
+                        or font.img):
+                    font.extract()
+                    continue
+
+                try:
+                    size = font['size']
+                    if size != "2":
+                        font.extract()
+
+                    elif "©" in font.text:
+                        font.extract()
+
+                    elif re.match("(Puedes +escucharl[a|o])", font.text):
+                        font.extract()
+
+                    elif "Versión de" in font.text:
+                        font.extract()
+
+                    elif re.match("(Puedes +visitarl[a|oe] en)", font.text):
+                        font.extract()
+
+                    elif "Volver a:" in font.text:
+                        font.extract()
+
+                except KeyError:
+                    font.extract()
+                    continue
+
+            verses = []
+            fonts = longest_block.select("p font")
+            for font in fonts:
+                verse = font.text.strip(" \xa0\n\t")
+                verses.extend(verse.split("\n"))
+
+            for verse in verses:
                 verse = verse.strip()
-                if not verse:
-                    continue
-                if "Reseña" in verse:
-                    continue
-                elif any(char.isnumeric() for char in verse):
-                    continue
-                elif verse == "De ":
-                    continue
-                elif verse == "\xa0":
-                    continue
-                elif "Versión de" in verse:
-                    continue
-                elif len(verse) < 4:
-                    continue
-                else:
-                    verses_almost.append(verse)
 
-            for verse in verses_almost:
-                verse_new = re.sub("\xa0", " ", verse)
+                if not verse or len(verse) < 6:
+                    continue
+
+                elif verse.upper() == verse:
+                    verse = verse.capitalize()
+
                 patt = re.compile(" +")
-                verse_newest = re.sub(patt, " ", verse_new)
-
-                verses_poet.append(verse_newest)
+                verse = re.sub("\xa0", " ", verse)
+                verse = re.sub(patt, " ", verse)
+                verses_poet.append(verse)
 
             verses_definitive.extend(verses_poet)
 
@@ -119,9 +155,9 @@ def getting_amediavoz_links(urls):
 
         for anchor in anchors:
             if (
-                anchor.endswith(".htm")
-                and anchor not in poets_urls
-                and anchor not in discarded_urls
+                    anchor.endswith(".htm")
+                    and anchor not in poets_urls
+                    and anchor not in discarded_urls
             ):
                 poets_urls.append(anchor)
 
