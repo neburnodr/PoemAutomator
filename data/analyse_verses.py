@@ -272,6 +272,9 @@ class Syllabifier:
                 else:
                     block_clean = block_clean[1:]
 
+                if len(block_clean) == 1:
+                    break
+
             if (len(block_clean) > 1
                 and block_clean[0] in debiles
                 and block_clean[1] in fuertes
