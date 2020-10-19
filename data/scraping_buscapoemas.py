@@ -106,7 +106,7 @@ def getting_poets(buscapoemas_url):
     links = [href for href in hrefs if "/poeta/" in href]
     poet_urls = set(links)
 
-    return list(poet_urls).sort()
+    return sorted(list(poet_urls))
 
 
 def getting_poems(poet_url, poet_path):
