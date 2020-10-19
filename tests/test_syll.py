@@ -31,3 +31,24 @@ class TestSyll:
         assert syll.consonant_rhyme == "i"
         assert syll.asonant_rhyme == "i"
         assert syll.syllables == 11
+
+    def test_six(self):
+        sentence = "gente"
+        syll = Syllabifier(sentence)
+        assert syll.consonant_rhyme == "ente"
+        assert syll.asonant_rhyme == "ee"
+        assert syll.syllables == 2
+
+    def test_seven(self):
+        sentence = "inútilmente"
+        syll = Syllabifier(sentence)
+        assert syll.consonant_rhyme == "ente"
+        assert syll.asonant_rhyme == "ee"
+        assert syll.syllables == 5
+
+    def test_eight(self):
+        sentence = "La amistad danza en torno a la Tierra y,"
+        syll = Syllabifier(sentence)
+        assert syll.consonant_rhyme == "ai"
+        assert syll.asonant_rhyme == "ai"
+        assert syll.syllables == 11

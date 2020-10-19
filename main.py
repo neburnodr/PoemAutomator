@@ -18,10 +18,10 @@ def fetch_data() -> None:
 
         print("[+] Starting the webscraping process to create a database of verses...")
         verses = scrape_verses()
-
+        verses = set(verses)
         print("[+] Saving the raw verses in 'raw_verses.txt'")
         with open("data/raw_verses.txt", "w") as f:
-            f.write("\n".join(verses))
+            f.write("\n".join(sorted(verses)))
 
     if not path.exists("data/verses.txt"):
         print("[+] Retrieving the verses from 'raw_verses.txt")
