@@ -47,8 +47,15 @@ class Syllabifier:
                 if len(block) == 1:
                     try:
                         if syllabified_sentence.strip()[-1] in vowels:
-                            syllabified_sentence += block
-                            block = ""
+                            if (syllabified_sentence.strip()[-1] in debiles
+                                and block in debiles
+                                and sentence[i + 1] not in "ns"
+                            ):
+                                syllabified_sentence += "-" + block
+                                block = ""
+                            else:
+                                syllabified_sentence += block
+                                block = ""
                         else:
                             syllabified_sentence += "-" + block
                             block = ""
@@ -280,8 +287,7 @@ class Syllabifier:
 
             if (len(block_clean) > 1
                 and block_clean[0] in debiles
-                and block_clean[1] in fuertes
-            ):
+                and block_clean[1] in vowels):
                 block_clean = block_clean[1:]
 
         if " " in block_clean:

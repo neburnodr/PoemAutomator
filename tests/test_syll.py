@@ -56,3 +56,31 @@ class TestSyll:
         assert syll.consonant_rhyme == "errai"
         assert syll.asonant_rhyme == "ea"
         assert syll.syllables == 10
+
+    def test_nine(self):
+        sentence = "pero yo no puedo huir"
+        syll = Syllabifier(sentence)
+        assert syll.consonant_rhyme == "ir"
+        assert syll.asonant_rhyme == "i"
+        assert syll.syllables == 8
+
+    def test_ten(self):
+        sentence = "del huerto de fray Luis."
+        syll = Syllabifier(sentence)
+        assert syll.syllables == 7
+        assert syll.asonant_rhyme == "i"
+        assert syll.consonant_rhyme == "is"
+
+    def test_elve(self):
+        sentence = "plegándose en mi pubis."
+        syll = Syllabifier(sentence)
+        assert syll.consonant_rhyme == "ubis"
+        assert syll.asonant_rhyme == "ui"
+        assert syll.syllables == 7
+
+    def test_twelve(self):
+        sentence = "A este trabajo ruin."
+        syll = Syllabifier(sentence)
+        assert syll.consonant_rhyme == "in"
+        assert syll.asonant_rhyme == "i"
+        assert syll.syllables == 7
