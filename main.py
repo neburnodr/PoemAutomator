@@ -13,6 +13,10 @@ urls = [
 ]
 
 
+pg_user = "postgres"
+pg_pwd = getpass.getpass()
+
+
 def fetch_data() -> None:
     if not path.exists("data/raw_verses.txt"):
 
@@ -59,7 +63,7 @@ def fetch_data() -> None:
 
         ]
 
-        db_funcs.csv_file_creator(ready_verse)
+        db_funcs.csv_file_appender(ready_verse)
 
     print("[+] Done analysing the verses. CSV File ready to use.")
 
@@ -92,34 +96,29 @@ def scrape_verses() -> List[str]:
 
 
 def main() -> None:
-    db_exist = input("Do you need to build the DB of verses? [y/n]")
+    """First check if DB is created"""
+    if not db_funcs.check_if_user_exists(pg_user, pg_pwd):
+        db_funcs.create_user(pg_user, pg_pwd)
 
-    if db_exist.capitalize() != "Y":
-        print(
-            "[+] Requirements satisfied. Starting the poem generator...", end="\n\n"
-        )
-        poem_creator.create_poem()
+    if not db_funcs.check_if_db_exists(pg_user, pg_pwd):
+        db_funcs.create_db(pg_user, pg_pwd)
+        db_funcs.grant_access(pg_user, pg_pwd)
+        db_funcs.create_db_table()
 
-    else:
-        pg_username = input("Enter username to use for PostgreSQL: ")
-        pg_pwd = getpass.getpass(prompt="Enter password for given user: ", stream=None)
-        database_name = input("Enter name of the DB to be created: ")
-        tablename = "verses"
+    if not db_funcs.check_if_table_exists():
+        db_funcs.create_db_table()
 
-        if not db_funcs.check_if_db_exists(pg_username, pg_pwd, database_name):
-            db_funcs.create_db(pg_username, pg_pwd, database_name)
-            db_funcs.create_db_table(pg_username, pg_pwd, database_name, tablename)
+    if not (path.exists("/home/nebur/Desktop/poemautomator/data/raw_verses.txt")
+            or path.exists("/home/nebur/Desktop/poemautomator/data/verses.txt")
+            or path.exists("/home/nebur/Desktop/poemautomator/data/verse_list.csv")
+    ):
 
-        if not db_funcs.check_if_table_exists(pg_username, pg_pwd, database_name, tablename):
-            db_funcs.create_db_table(pg_username, pg_pwd, database_name, tablename)
-
-        db_funcs.delete_rows_from_table(pg_username, pg_pwd, database_name, tablename)
+        db_funcs.delete_rows_from_table()
         fetch_data()
+        db_funcs.import_csv_to_db()
 
-        db_funcs.import_csv_to_db(pg_username, pg_pwd, database_name, tablename)
-
-        print("[+] Requirements satisfied. Starting the poem generator...", end="\n\n")
-        poem_creator.create_poem()
+    print("[+] Requirements satisfied. Starting the poem generator...", end="\n\n")
+    poem_creator.create_poem()
 
 
 if __name__ == "__main__":
