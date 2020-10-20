@@ -102,13 +102,14 @@ def if_db():
     if not db_funcs.check_if_table_exists():
         db_funcs.create_db_table()
 
-    if not (path.exists("/home/nebur/Desktop/poemautomator/data/raw_verses.txt")
-            or path.exists("/home/nebur/Desktop/poemautomator/data/verses.txt")
-            or path.exists("/home/nebur/Desktop/poemautomator/data/verse_list.csv")):
+    if (not path.exists("/home/nebur/Desktop/poemautomator/data/raw_verses.txt")
+        or not path.exists("/home/nebur/Desktop/poemautomator/data/verses.txt")
+        or not path.exists("/home/nebur/Desktop/poemautomator/data/verse_list.csv")
+    ):
 
         db_funcs.delete_rows_from_table()
         fetch_data()
-        db_funcs.import_csv_to_db()
+        db_funcs.import_csv_to_db(pg_user, pg_pwd)
 
 
 def main() -> None:

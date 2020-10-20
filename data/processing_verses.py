@@ -15,7 +15,7 @@ def removing_junk(verse_list):
     new_verse_list = []
 
     for verse in verse_list:
-        verse = verse.strip("* ").lstrip("?!»)],;:*.-").rstrip("¿¡«([*").strip()
+        verse = verse.strip("*/ ").lstrip("?!»)],;:*.-").rstrip("¿¡«([*").strip()
 
         if len(verse) < 6:
             continue

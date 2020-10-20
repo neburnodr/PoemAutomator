@@ -5,7 +5,7 @@ save_csv_path = "/home/nebur/Desktop/poemautomator/data"
 
 
 user = "poemator_user"
-pwd = ""
+pwd = "1234"
 database = "poemator_db"
 tablename = "verses_table"
 
@@ -47,7 +47,7 @@ def cursor_execute(conn, query):
 def check_if_user_exists(username, password):
     conn = create_connection(username, password)
     query = f"""SELECT usename
-                FROM pg_catalog.pg_user"""
+                FROM pg_catalog.pg_user;"""
     cur = cursor_execute(conn, query)
 
     users = cur.fetchall()
@@ -63,7 +63,9 @@ def check_if_user_exists(username, password):
 
 def create_user(username, password):
     conn = create_connection(username, password)
-    query = f"""CREATE USER {user}"""
+    query = f"""CREATE USER {user}
+                WITH PASSWORD '{pwd}';
+                """
     cursor_execute(conn, query)
 
 
@@ -143,9 +145,9 @@ def csv_file_appender(verse):
         writer.writerow(verse)
 
 
-def import_csv_to_db():
-    conn = create_connection(database_name=database)
-    query = """COPY {tablename} FROM '/home/nebur/Desktop/poemautomator/data/verse_list.csv' 
+def import_csv_to_db(username, password):
+    conn = create_connection(username, password, database)
+    query = f"""COPY {tablename} FROM '/home/nebur/Desktop/poemautomator/data/verse_list.csv' 
                WITH (FORMAT csv);"""
     cursor_execute(conn, query)
     conn.close()
