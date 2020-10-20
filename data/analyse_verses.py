@@ -236,6 +236,9 @@ class Syllabifier:
             last_word, self.agullaesdr
         )
         asonant_rhyme = self.asonant_rhyme_finder(consonant_rhyme)
+
+        consonant_rhyme = consonant_rhyme.replace("ll", "i").replace("y", "i")
+
         return consonant_rhyme, asonant_rhyme
 
     def consonant_rhyme_finder(self, last_word, agullaesdr):
@@ -280,8 +283,6 @@ class Syllabifier:
                 and block_clean[1] in fuertes
             ):
                 block_clean = block_clean[1:]
-
-        block_clean = block_clean.replace("ll", "i").replace("y", "i")
 
         if " " in block_clean:
             block_clean = "".join([letter for letter in block_clean if letter != " "])
