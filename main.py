@@ -6,15 +6,9 @@ from typing import List
 from os import path
 import getpass
 
-urls = [
-    "http://amediavoz.com/indice-A-K.htm",
-    "http://amediavoz.com/indice-L-Z.htm",
-    "https://www.buscapoemas.net/poetas.html",
-]
-
 
 pg_user = "postgres"
-pg_pwd = getpass.getpass()
+pg_pwd = getpass.getpass("user 'postgres' password: ")
 
 
 def fetch_data() -> None:
@@ -28,6 +22,7 @@ def fetch_data() -> None:
             f.write("\n".join(sorted(verses)))
 
     if not path.exists("data/verses.txt"):
+
         print("[+] Retrieving the verses from 'raw_verses.txt")
         with open("data/raw_verses.txt") as f:
             verses = f.read().split("\n")
@@ -70,11 +65,11 @@ def fetch_data() -> None:
 
 def scrape_verses() -> List[str]:
     """Scraping Amediavoz and Buscapoemas"""
-    urls_poets_amediavoz = scraping_amediavoz.getting_amediavoz_links(urls[:2])
+    urls_poets_amediavoz = scraping_amediavoz.getting_amediavoz_links()
     verses = scraping_amediavoz.getting_the_verses(urls_poets_amediavoz)
 
     # Scraping Buscapoemas
-    urls_poets = scraping_buscapoemas.getting_poets(urls[2])
+    urls_poets = scraping_buscapoemas.getting_poets()
 
     counter = 0
     for poet_url in urls_poets:
@@ -95,7 +90,7 @@ def scrape_verses() -> List[str]:
     return verses
 
 
-def main() -> None:
+def if_db():
     """First check if DB is created"""
     if not db_funcs.check_if_user_exists(pg_user, pg_pwd):
         db_funcs.create_user(pg_user, pg_pwd)
@@ -103,19 +98,21 @@ def main() -> None:
     if not db_funcs.check_if_db_exists(pg_user, pg_pwd):
         db_funcs.create_db(pg_user, pg_pwd)
         db_funcs.grant_access(pg_user, pg_pwd)
-        db_funcs.create_db_table()
 
     if not db_funcs.check_if_table_exists():
         db_funcs.create_db_table()
 
     if not (path.exists("/home/nebur/Desktop/poemautomator/data/raw_verses.txt")
             or path.exists("/home/nebur/Desktop/poemautomator/data/verses.txt")
-            or path.exists("/home/nebur/Desktop/poemautomator/data/verse_list.csv")
-    ):
+            or path.exists("/home/nebur/Desktop/poemautomator/data/verse_list.csv")):
 
         db_funcs.delete_rows_from_table()
         fetch_data()
         db_funcs.import_csv_to_db()
+
+
+def main() -> None:
+    if_db()
 
     print("[+] Requirements satisfied. Starting the poem generator...", end="\n\n")
     poem_creator.create_poem()

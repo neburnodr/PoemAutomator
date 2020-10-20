@@ -139,7 +139,7 @@ def getting_the_verses(poet_urls):
     return verses_definitive
 
 
-def getting_amediavoz_links(urls):
+def getting_amediavoz_links(urls=amediavoz_urls):
     print("[+] Getting the poets-urls from amediavoz.com")
 
     if not os.path.exists(f"{path}/amediavoz"):

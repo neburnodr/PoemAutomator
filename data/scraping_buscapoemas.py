@@ -5,6 +5,9 @@ import os
 """Variable to hold the parsed lines"""
 verses = []
 
+""""""
+url = "https://www.buscapoemas.net/poetas.html"
+
 """strings to exclude"""
 roman_numerals = [
     "I",
@@ -91,7 +94,7 @@ def getting_the_verses(poem_url, poet_path):
     return verses_poem
 
 
-def getting_poets(buscapoemas_url):
+def getting_poets(buscapoemas_url=url):
     """parsing the POET-URLS"""
 
     if not os.path.exists(path):
@@ -126,17 +129,24 @@ def getting_poems(poet_url, poet_path):
 
 
 def main():
-    url = "https://www.buscapoemas.net/poetas.html"
-    alt = input("alternative url1? [Y/N]")
-    if alt.capitalize() == "Y":
-        url = input("URL to input: ")
-
-    poem_urls = getting_poems(url)
+    urls_poets = getting_poets(url)
 
     verses = []
-    for poem_url in poem_urls:
-        print("[+] Extracting {}".format(poem_url))
-        verses.extend(getting_the_verses(poem_url))
+
+    counter = 0
+    for poet_url in urls_poets:
+        if poet_url in exclude_poets:
+            continue
+
+        poet_path = poet_url[34:-4]
+        counter += 1
+        urls_poems = getting_poems(poet_url, poet_path)
+
+        print(f"\n[+] [{counter}/{len(urls_poets) - len(exclude_poets)}] "
+              f"Extracting the verses from {poet_url}\n")
+
+        for poem_url in urls_poems:
+            verses.extend(getting_the_verses(poem_url, poet_path))
 
 
 if __name__ == "__main__":

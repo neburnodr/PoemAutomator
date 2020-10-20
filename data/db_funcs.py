@@ -1,6 +1,5 @@
 import psycopg2
 import csv
-import getpass
 
 save_csv_path = "/home/nebur/Desktop/poemautomator/data"
 
