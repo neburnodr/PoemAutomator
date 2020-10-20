@@ -6,7 +6,7 @@ save_csv_path = "/home/nebur/Desktop/poemautomator/data"
 
 
 user = "poemator_user"
-pwd = getpass.getpass()
+pwd = ""
 database = "poemator_db"
 tablename = "verses_table"
 
@@ -45,14 +45,14 @@ def cursor_execute(conn, query):
     return cur
 
 
-def check_if_user_exists():
-    conn = create_connection()
-
-    query = f"""SELECT * FROM USER"""
-
+def check_if_user_exists(username, password):
+    conn = create_connection(username, password)
+    query = f"""SELECT usename
+                FROM pg_catalog.pg_user"""
     cur = cursor_execute(conn, query)
 
     users = cur.fetchall()
+    users = [name_user[0] for name_user in users] # From list of tuples to list of strings
 
     if user in users:
         conn.close()
@@ -62,20 +62,15 @@ def check_if_user_exists():
     return False
 
 
-def create_user():
-    conn = create_connection()
-
+def create_user(username, password):
+    conn = create_connection(username, password)
     query = f"""CREATE USER {user}"""
-
     cursor_execute(conn, query)
-    print("[+] Created user for DB")
 
 
-def check_if_db_exists():
-    conn = create_connection()
-
+def check_if_db_exists(username, password):
+    conn = create_connection(username, password)
     query = "SELECT datname FROM pg_database;"
-
     cur = cursor_execute(conn, query)
 
     list_database = cur.fetchall()
@@ -85,21 +80,22 @@ def check_if_db_exists():
         conn.close()
         return True
 
-    else:
-        conn.close()
-        return False
-
-
-def create_db():
-    print("[+] Creating the database...")
-
-    conn = create_connection()
-    query = f"CREATE DATABASE {database};"
-
-    cursor_execute(conn, query)
-
     conn.close()
-    print(f"[+] Database '{database}' created")
+    return False
+
+
+def create_db(username, password):
+    conn = create_connection(username, password)
+    query = f"CREATE DATABASE {database};"
+    cursor_execute(conn, query)
+    conn.close()
+
+
+def grant_access(username, password):
+    conn = create_connection(username, password)
+    query = f"grant all privileges on database {database} to {user};"
+    cursor_execute(conn, query)
+    conn.close()
 
 
 def check_if_table_exists():
@@ -113,19 +109,13 @@ def check_if_table_exists():
     exists = cur.fetchall()[0][0]
 
     if exists:
-        print(f"[+] Table '{tablename}' exist")
         return True
 
-    else:
-        print(f"[-] Table '{tablename}' doesn't exist")
-        return False
+    return False
 
 
 def create_db_table():
-    print(f"[+] Creating the table {tablename} in {database}")
-
     conn = create_connection(database_name=database)
-
     query = f"""CREATE TABLE {tablename}(
                 id integer,
                 verse text,
@@ -136,21 +126,14 @@ def create_db_table():
                 beg_verse bool,
                 int_verse bool,
                 fin_verse bool,
-                UNIQUE(id, verse)
-        );
-        """
-
+                UNIQUE(id, verse));"""
     cursor_execute(conn, query)
-
     conn.close()
-    print("[+] Table '{}' created in '{}'.".format(tablename,
-                                                   database))
 
 
 def delete_rows_from_table():
     conn = create_connection(database_name=database)
     query = f"DELETE FROM {tablename};"
-
     cursor_execute(conn, query)
     conn.close()
 
@@ -162,20 +145,11 @@ def csv_file_appender(verse):
 
 
 def import_csv_to_db():
-    print("[+] importing CSV file to '{}'".format(database))
-
     conn = create_connection(database_name=database)
-
-    cur = conn.cursor()
-
-    cur.execute(f"""COPY {tablename} FROM '/home/nebur/Desktop/poemautomator/data/verse_list.csv' 
-                    WITH (FORMAT csv);
-                    """
-                )
-
+    query = """COPY {tablename} FROM '/home/nebur/Desktop/poemautomator/data/verse_list.csv' 
+               WITH (FORMAT csv);"""
+    cursor_execute(conn, query)
     conn.close()
-
-    print("[+] Done copying CSV file to database '{}'".format(database))
 
 
 def fetch_verses(long, rhyme, cons=True):
