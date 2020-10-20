@@ -9,7 +9,11 @@ class TestSyll:
         assert syll.asonant_rhyme == "ia"
 
     def test_two(self):
-        assert Syllabifier("Anatomía de la melancolía Alegra el corazón haber vivido,").asonant_rhyme == "io"
+        sentence = "Anatomía de la melancolía Alegra el corazón haber vivido,"
+        syll = Syllabifier(sentence)
+        assert syll.consonant_rhyme == "ido"
+        assert syll.asonant_rhyme == "io"
+        assert syll.syllables == 22
 
     def test_three(self):
         sentence = "si nos quemó la llama del vivir,"
@@ -21,7 +25,7 @@ class TestSyll:
     def test_four(self):
         sentence = "su huella es una herida hecha de orgullo"
         syll = Syllabifier(sentence)
-        assert syll.consonant_rhyme == "ullo"
+        assert syll.consonant_rhyme == "uio"
         assert syll.asonant_rhyme == "uo"
         assert syll.syllables == 11
 
@@ -49,6 +53,6 @@ class TestSyll:
     def test_eight(self):
         sentence = "La amistad danza en torno a la Tierra y,"
         syll = Syllabifier(sentence)
-        assert syll.consonant_rhyme == "ai"
-        assert syll.asonant_rhyme == "ai"
-        assert syll.syllables == 11
+        assert syll.consonant_rhyme == "errai"
+        assert syll.asonant_rhyme == "ea"
+        assert syll.syllables == 10
