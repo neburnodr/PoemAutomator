@@ -1,5 +1,6 @@
 import psycopg2
 import csv
+import random
 
 save_csv_path = "/home/nebur/Desktop/poemautomator/data"
 
@@ -153,7 +154,7 @@ def import_csv_to_db(username, password):
     conn.close()
 
 
-def fetch_verses(long, rhyme, cons=True):
+def fetch_verses(long, rhyme, cons=True, unique=False):
     conn = create_connection(database_name=database)
     rhyme_type = "consonant_rhyme" if cons else "asonant_rhyme"
     query = f"""SELECT DISTINCT last_word, verse from public.verses 
@@ -164,7 +165,30 @@ def fetch_verses(long, rhyme, cons=True):
     cur = cursor_execute(conn, query)
 
     verses = cur.fetchall()
-    # Only unique last_words
-    verses = {verse[0]: verse[1] for verse in verses}
+    if unique:
+        # Only unique last_words
+        verses = {verse[0]: verse[1] for verse in verses}
+        verses = [(verse, last_word) for last_word, verse in verses.items()]
+
+    else:
+        verses = [(verse[1], verse[2]) for verse in verses]
 
     return verses
+
+
+def fetch_rhyme(long, cons=True):
+    conn = create_connection(database_name=database)
+    rhyme_type = "consonant_rhyme" if cons else "asonant_rhyme"
+    query = f"""select {rhyme_type}, count(*) from {tablename}
+            where long = {long}
+            group by {rhyme_type}
+            order by count(*) DESC;"""
+
+    cur = cursor_execute(conn, query)
+
+    rhymes = cur.fetchall()
+    rhymes = [rhyme[0] for rhyme in rhymes if rhyme[1] > 5]
+
+    rhyme = random.choice(rhymes)
+
+    return rhyme

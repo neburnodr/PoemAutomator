@@ -4,10 +4,10 @@ import string
 import datetime
 from os import path
 import sys
-import re
 import argparse
 from data.analyse_verses import Syllabifier
 from data.online_rhymer import Rhymer
+from data.db_funcs import fetch_verses, fetch_rhyme
 
 
 punct = string.punctuation + " ¡¿"
@@ -15,60 +15,88 @@ vowels = "aeiouáéíóúÁÉÍÓÚAEIOU"
 
 
 class PoemAutomator:
-    """Types of lines: beginnings (com), intermediate (int), endings (fin)
-    To iterate through"""
+    """Types of lines: beginnings (com), intermediate (int), endings (fin) to iterate through"""
     TYPES_VERSES = ["int", "com", "fin"]
 
     def __init__(self, num_ver, long_ver, rhy_seq):
         """User-defined variables"""
-        self.num_verses = int(num_ver)
-        self.long_verses = int(long_ver)
-        self.rhy_seq = rhy_seq
+        self.num_verses = int(num_ver)    #  -> INT -> 7. Number of verses in the final poem
+        self.long_verses = int(long_ver)  #  -> INT -> 8. Possibility RANGES in the FUTURE: 5-7 (5<=long<=7)
+        self.rhy_seq = rhy_seq     # STR  -> "ABAB BABA" -> Each character is a RHYME_CODE. Space = emptyline
 
-        """Dict of rhymes to use.
-        The keys are the code associated with the rhyme (A/B or 1/2 or whatever)
-        the values will later be the concrete fragment-to-rhyme"""
-        self.rhymes_to_use = {}
+        self.verses_to_use = {}    # DICT -> {RHYME_CODE: TUPLE(verse, last_word)} from DB
+        self.rhymes_to_use = {}    # DICT -> {RHYME_CODE: str} -> Example: {A: "ado", B: "es"}
 
-        """words_used is a list that'll make sure that no word that ends a verse will repeat itself at the end of 
-        another verse """
-        self.words_used = {}
+        for rhyme_code in rhy_seq:
+            if rhyme_code != " ":
+                self.rhymes_to_use[rhyme_code] = ""
+                self.verses_to_use[rhyme_code] = []
 
-        for rhyme in rhy_seq:
-            if rhyme != " ":
-                self.rhymes_to_use[rhyme] = ""
-                self.words_used[rhyme] = []
-
-        """verses_used differs from the variable poem in the way that poem can have it's lines manipulated
-        verses_used on the contrary saves the lines used as they're in the database"""
-        self.verses_used = []
-
-        """If the user wants to decide the concrete endings-to-rhyme"""
-        self.decide_rhyme()
-
+        self.verses_used = []      # verses_used on the contrary saves the lines used as they're in the database
+        self.decide_rhyme()        # If the user wants to decide the concrete endings-to-rhyme
         self.poem = self.poem_random_generator()
+
+    def decide_rhyme(self) -> None:
+        """Populates the rhymes_to_use dict if the user wants to decide the rhyme-endings beforehand"""
+        self_decide = input("Quieres elegir las rimas? [Y/N]: ")
+
+        if self_decide.capitalize().strip() == "Y":
+            for key in self.rhymes_to_use.keys():
+                if key == key.upper():
+                    self.rhymes_to_use[key] = input(f"Rima consonante {key}: -")
+
+                    verses_to_use = fetch_verses(self.long_verses, self.rhymes_to_use[key], cons=True, unique=False)
+                    while not verses_to_use:
+                        self.rhymes_to_use[key] = input(
+                            f"La rima consonante que has especificado no existe en la base de datos. Prueba de nuevo: ")
+
+                        verses_to_use = fetch_verses(self.long_verses,
+                                                     self.rhymes_to_use[key],
+                                                     cons=True,
+                                                     unique=False,
+                                                     )
+
+                    self.verses_to_use[key] = verses_to_use
+
+                else:
+                    self.rhymes_to_use[key] = input(f"Rima asonante {key}: -")
+
+                    verses_to_use = fetch_verses(self.long_verses, self.rhymes_to_use[key], cons=False, unique=False)
+                    while not verses_to_use:
+                        self.rhymes_to_use[key] = input(
+                            f"La rima asonante que has especificado no existe en la base de datos. Prueba de nuevo: ")
+
+                        verses_to_use = fetch_verses(self.long_verses,
+                                                     self.rhymes_to_use[key],
+                                                     cons=False,
+                                                     unique=False
+                                                     )
+
+                    self.verses_to_use[key] = verses_to_use
+
+        else:
+            """If USER choose not to decide the rhymes the DICT gets populated by random rhymes"""
+            for key in self.rhymes_to_use.keys():
+                cons = True if key == key.upper() else False
+                rhyme_to_use = fetch_rhyme(self.long_verses, cons=cons)
+                self.rhymes_to_use[key] = rhyme_to_use
+                verses_to_use = fetch_verses(self.long_verses,
+                                             rhyme_to_use,
+                                             cons=cons,
+                                             unique=False)
+
+                self.verses_to_use[key] = verses_to_use
 
     def poem_random_generator(self):
         poem = []
 
-        for i, rhyme in enumerate(self.rhy_seq):
-            if rhyme == " ":
+        for i, rhyme_code in enumerate(self.rhy_seq):
+            if rhyme_code == " ":
                 poem.append("")
                 continue
 
-            elif not self.rhymes_to_use[rhyme]:
-                type_verse = self.type_of_verse(poem)
-
-                rhyme_block_to_use = ""
-                while rhyme_block_to_use in self.rhymes_to_use.values():
-                    verse = self.select_verse_without_rhyme(type_verse)
-                    verse_analyzed = Syllabifier(verse)
-                    rhyme_block_to_use = verse_analyzed.consonant_rhyme
-
-                self.rhymes_to_use[rhyme] = rhyme_block_to_use
-
             else:
-                rhyme_block = self.rhymes_to_use[rhyme]
+                rhyme_block = self.rhymes_to_use[rhyme_code]
                 type_verse = self.type_of_verse(poem)
 
                 verse = self.select_verse_with_rhyme(rhyme_block, type_verse)
@@ -86,19 +114,12 @@ class PoemAutomator:
 
             poem.append(verse.strip(")("))
             last_word = last_word_finder(verse)
-            self.words_used[rhyme].append(last_word.strip(punct))
+            self.words_used[rhyme_code].append(last_word.strip(punct))
             self.verses_used.append(decapitalize(verse.strip(punct)))
 
         return "\t" + "\n\t".join(poem)
 
-    def select_verse_with_rhyme(self, block_to_rhyme, type_of_verse, cut=False):
-        if cut:
-            with open(
-                f"sil_{type_of_verse}/{self.long_verses}_{block_to_rhyme}.txt",
-                "r",
-                encoding="UTF-8",
-            ) as f:
-                verses = f.read().split("\n")
+    def select_verse_with_rhyme(self, block_to_rhyme, type_verse):
 
             filtered_verses = [
                 verse
@@ -108,7 +129,7 @@ class PoemAutomator:
 
             if not filtered_verses:
                 verse = self.alternative_verse_selecting_method(
-                    block_to_rhyme, type_of_verse
+                    block_to_rhyme, type_verse
                 )
                 return verse
             else:
@@ -191,11 +212,12 @@ class PoemAutomator:
 
             except FileNotFoundError:
                 print(
-                    "Hasta aquí hemos llegado -> final de la func select_verse_without_rhyme"
+                    "No-End of function..."
                 )
 
     def type_of_verse(self, poem):
-        """Returns 'com', 'int' or 'fin' depending on which kind of verse we need at each time"""
+        """Returns 'com', 'int' or 'fin' depending on which kind of verse we need at each moment"""
+
         if len(poem) == 0:
             return "com"
 
@@ -239,7 +261,7 @@ class PoemAutomator:
                 last_word = last_word_finder(verse)
                 new_last_word = self.online_rhyme_dict(
                     last_word, words_used=self.words_used[rhyme_block]
-                )  # puede dar NONE -> Investigar
+                )  # can return NONE -> Investigate
                 while decapitalize(verse.strip(punct)) in self.verses_used:
                     verse = self.select_verse_with_rhyme(rhyme_block, type_verse)
 
@@ -285,18 +307,6 @@ class PoemAutomator:
             return False
 
         return True
-
-    def decide_rhyme(self) -> None:
-        """Populates the rhymes_to_use dict if the user wants to decide the rhyme-endings beforehand"""
-        self_decide = input("Quieres elegir las rimas? [Y/N]: ")
-
-        if self_decide.capitalize().strip() == "Y":
-            for key in self.rhymes_to_use.keys():
-                self.rhymes_to_use[key] = input(f"Rima {key}: ")
-                while not path.exists(f"./sil_int/{self.long_verses}_{self.rhymes_to_use[key]}.txt"):
-                    self.rhymes_to_use[key] = input(
-                        f"La rima que has especificado no existe en la base de datos. Prueba de nuevo: "
-                    )
 
 
 def decapitalize(strg, strict=True):
