@@ -24,7 +24,7 @@ class PoemAutomator:
         self.long_verses = int(long_ver)  #  -> INT -> 8. Possibility RANGES in the FUTURE: 5-7 (5<=long<=7)
         self.rhy_seq = rhy_seq     # STR  -> "ABAB BABA" -> Each character is a RHYME_CODE. Space = emptyline
 
-        self.verses_to_use = {}    # DICT -> {RHYME_CODE: TUPLE(verse, last_word)} from DB
+        self.verses_to_use = {}    # DICT -> {RHYME_CODE: TUPLE(verse, last_word, beg, int, end)} from DB
         self.rhymes_to_use = {}    # DICT -> {RHYME_CODE: str} -> Example: {A: "ado", B: "es"}
 
         for rhyme_code in rhy_seq:
@@ -53,7 +53,7 @@ class PoemAutomator:
                         verses_to_use = fetch_verses(self.long_verses,
                                                      self.rhymes_to_use[key],
                                                      cons=True,
-                                                     unique=False,
+                                                     unique=True,
                                                      )
 
                     self.verses_to_use[key] = verses_to_use
@@ -61,7 +61,7 @@ class PoemAutomator:
                 else:
                     self.rhymes_to_use[key] = input(f"Rima asonante {key}: -")
 
-                    verses_to_use = fetch_verses(self.long_verses, self.rhymes_to_use[key], cons=False, unique=False)
+                    verses_to_use = fetch_verses(self.long_verses, self.rhymes_to_use[key], cons=False, unique=True)
                     while not verses_to_use:
                         self.rhymes_to_use[key] = input(
                             f"La rima asonante que has especificado no existe en la base de datos. Prueba de nuevo: ")
@@ -69,7 +69,7 @@ class PoemAutomator:
                         verses_to_use = fetch_verses(self.long_verses,
                                                      self.rhymes_to_use[key],
                                                      cons=False,
-                                                     unique=False
+                                                     unique=True,
                                                      )
 
                     self.verses_to_use[key] = verses_to_use
@@ -83,7 +83,7 @@ class PoemAutomator:
                 verses_to_use = fetch_verses(self.long_verses,
                                              rhyme_to_use,
                                              cons=cons,
-                                             unique=False)
+                                             unique=True)
 
                 self.verses_to_use[key] = verses_to_use
 
@@ -96,20 +96,16 @@ class PoemAutomator:
                 continue
 
             else:
-                rhyme_block = self.rhymes_to_use[rhyme_code]
-                type_verse = self.type_of_verse(poem)
-
-                verse = self.select_verse_with_rhyme(rhyme_block, type_verse)
+                type_verse = self.type_determiner(poem)
+                verse = self.select_verse_with_rhyme(rhyme_code, type_verse)
 
                 counter = 0
                 while not self.is_valid(verse):
-                    verse = self.select_verse_with_rhyme(rhyme_block, type_verse)
+                    verse = self.select_verse_with_rhyme(rhyme_code, type_verse)
                     counter += 1
 
                     if counter == 20:
-                        verse = self.alternative_verse_selecting_method(
-                            rhyme_block, type_verse
-                        )
+                        verse = self.alternative_verse_selecting_method(rhyme_code, type_verse)
                         break
 
             poem.append(verse.strip(")("))
@@ -119,36 +115,18 @@ class PoemAutomator:
 
         return "\t" + "\n\t".join(poem)
 
-    def select_verse_with_rhyme(self, block_to_rhyme, type_verse):
+    def select_verse_with_rhyme(self, rhyme_code, type_verse):
 
-            filtered_verses = [
-                verse
-                for verse in verses
-                if not last_word_finder(verse) not in self.words_used[block_to_rhyme]
-            ]
+        verse = random.choice(self.verses_to_use[rhyme_code])
+        verse_index = self.verses_to_use[rhyme_code].find(verse)
+        del self.verses_to_use[rhyme_code][verse_index]
+        verse_text = verse[0]
 
-            if not filtered_verses:
-                verse = self.alternative_verse_selecting_method(
-                    block_to_rhyme, type_verse
-                )
-                return verse
-            else:
-                verse = random.choice(filtered_verses)
-                return verse
+        return verse_text
 
-        else:
-            try:
-                with open(
-                    f"sil_{type_of_verse}/{self.long_verses}_{block_to_rhyme}.txt",
-                    "r",
-                    encoding="UTF-8",
-                ) as f:
-                    verses = f.read().split("\n")
 
-                verse = random.choice(verses)
-                return verse
 
-            except FileNotFoundError:
+ """           except FileNotFoundError:
                 index_verses = self.TYPES_VERSES.index(type_of_verse)
                 new_type_of_verse = self.TYPES_VERSES[(index_verses + 1) % 2]
 
@@ -178,7 +156,7 @@ class PoemAutomator:
                     )
                     verse.replace(last_word, new_last_word)
                     return verse
-
+"""
     def select_verse_without_rhyme(self, type_verse):
         try:
             with open(f"{self.long_verses}_sil_{type_verse}.txt") as f:
@@ -215,7 +193,7 @@ class PoemAutomator:
                     "No-End of function..."
                 )
 
-    def type_of_verse(self, poem):
+    def type_determiner(self, poem):
         """Returns 'com', 'int' or 'fin' depending on which kind of verse we need at each moment"""
 
         if len(poem) == 0:

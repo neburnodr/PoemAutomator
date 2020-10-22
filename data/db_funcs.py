@@ -52,7 +52,7 @@ def check_if_user_exists(username, password):
     cur = cursor_execute(conn, query)
 
     users = cur.fetchall()
-    users = [name_user[0] for name_user in users] # From list of tuples to list of strings
+    users = [name_user[0] for name_user in users]  # From list of tuples to list of strings
 
     if user in users:
         conn.close()
@@ -157,21 +157,24 @@ def import_csv_to_db(username, password):
 def fetch_verses(long, rhyme, cons=True, unique=False):
     conn = create_connection(database_name=database)
     rhyme_type = "consonant_rhyme" if cons else "asonant_rhyme"
-    query = f"""SELECT DISTINCT last_word, verse from public.verses 
+    query = f"""SELECT verse, last_word, beg, int, end from public.verses 
                 WHERE long = {long}
-                AND {rhyme_type} = {rhyme}
+                AND {rhyme_type} = {rhyme};
                 """
 
     cur = cursor_execute(conn, query)
 
-    verses = cur.fetchall()
-    if unique:
-        # Only unique last_words
-        verses = {verse[0]: verse[1] for verse in verses}
-        verses = [(verse, last_word) for last_word, verse in verses.items()]
+    fetched_verses = cur.fetchall()
 
-    else:
-        verses = [(verse[1], verse[2]) for verse in verses]
+    if unique:
+        verses = []
+        # Only unique last_words
+        possible_last_words = set([verse[1] for verse in fetched_verses])
+        for word in possible_last_words:
+            verse = random.choice([fetched for fetched in fetched_verses if fetched[1] == word])
+            verses.append(verse)
+
+    verses = fetched_verses
 
     return verses
 
