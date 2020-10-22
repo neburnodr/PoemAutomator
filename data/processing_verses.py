@@ -1,3 +1,6 @@
+import re
+
+
 def clean_verses(verses):
     print("[+] Processing the scraped verses...")
 
@@ -18,6 +21,9 @@ def removing_junk(verse_list):
         verse = verse.strip("*/ ").lstrip("?!»)],;:*.-").rstrip("¿¡«([*").strip()
 
         if len(verse) < 6:
+            continue
+
+        if re.search(([A-Z]+)([A-Z]+), verse):
             continue
 
         if verse[0] == "¿" and verse.count("?") == 0:
