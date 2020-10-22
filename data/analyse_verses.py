@@ -12,14 +12,14 @@ fuertes = "AEOaeo"
 fuertes_tildadas = "ÁÉÓáéó"
 ##############################
 vowels_tildadas = "áéíóúÁÉÍÓÚ"
-punct = "!\"#$%&'()*+,./:;<=>?@[\\]^_`{|}~"
+punct = "¡!\"#$%&'()*+,./:;<=>¿?@[\\]^_—{|}~-«”»"
 capitals = string.ascii_uppercase
 
 
 class Syllabifier:
     def __init__(self, sentence):
         self.sentence = sentence.strip(".,¿?¡!«'—»();:\"-* ")
-        self.last_word = self.last_word_finder(sentence)
+        self.last_word = last_word_finder(sentence)
         self.syllabified_sentence = self.syllabify(self.sentence)
         self.syllables, self.agullaesdr = self.counter(self.syllabified_sentence)
         self.consonant_rhyme, self.asonant_rhyme = self.rhymer(
@@ -196,7 +196,7 @@ class Syllabifier:
 
     def counter(self, sentence):
         sil_count = sentence.count("-")
-        last_word = self.last_word_finder(sentence)
+        last_word = last_word_finder(sentence)
         type_word = self.agu_lla_esdr(last_word)
         return sil_count + type_word, type_word
 
@@ -237,7 +237,7 @@ class Syllabifier:
         return 1
 
     def rhymer(self, verso):
-        last_word = self.last_word_finder(verso)
+        last_word = last_word_finder(verso)
 
         consonant_rhyme = self.consonant_rhyme_finder(
             last_word, self.agullaesdr
@@ -299,7 +299,7 @@ class Syllabifier:
         return asonant_rhyme
 
     def is_beg(self, sentence):
-        if sentence.capitalize() == sentence:
+        if sentence[0].upper() == sentence[0]:
             return True
         else:
             return False
@@ -316,25 +316,27 @@ class Syllabifier:
         else:
             return False
 
-    def last_word_finder(self, sentence):
-        if sentence.count(" ") != 0:
-            last_word = sentence[sentence.rfind(" "):].strip(punct + " ")
 
-            if last_word == "y":
-                last_word = sentence
-                while last_word.count(" ") > 1:
-                    last_word = last_word[last_word.find(" "):].strip()
+def last_word_finder(sentence):
+    if sentence.count(" ") != 0:
+        last_word = sentence[sentence.rfind(" "):].strip(punct + " ")
 
-                return self.decapitalize(last_word.strip(punct + " "))
+        if last_word == "y":
+            last_word = sentence
+            while last_word.count(" ") > 1:
+                last_word = last_word[last_word.find(" "):].strip()
 
-            return self.decapitalize(last_word.strip(punct + " "))
+            return decapitalize(last_word.strip(punct + " "))
 
-        return self.decapitalize(sentence.strip(punct + " "))
+        return decapitalize(last_word.strip(punct + " "))
 
-    def decapitalize(self, strg, strict=True):
-        if strict:
-            return strg.lower()
-        return strg[0].lower() + strg[1:]
+    return decapitalize(sentence.strip(punct + " "))
+
+
+def decapitalize(strg, strict=True):
+    if strict:
+        return strg.lower()
+    return strg[0].lower() + strg[1:]
 
 
 def main():
@@ -346,6 +348,7 @@ def main():
     print("[+] Aguda, llana o esdrújula?:", syllabifier.agullaesdr)
     print("[+] Bloque consonante a rimar:", syllabifier.consonant_rhyme)
     print("[+] Bloque asonante a rimar:", syllabifier.asonant_rhyme)
+    print("[+] beg: {}, int: {}, end: {}".format(syllabifier.beg, syllabifier.int, syllabifier.end))
 
 
 if __name__ == "__main__":

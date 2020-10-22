@@ -20,6 +20,7 @@ discarded_urls = [
     "http://amediavoz.com/index.htm",
     "http://amediavoz.com/indice-A-K.htm",
     "http://amediavoz.com/indice-L-Z.htm",
+    "http://amediavoz.com/romancero.htm",
 ]
 
 

@@ -1,9 +1,10 @@
 import psycopg2
 import csv
 import random
+from typing import Tuple, List, Any
 
 save_csv_path = "/home/nebur/Desktop/poemautomator/data"
-
+Verse = List[Tuple[bool, bool, bool, str, str]]
 
 user = "poemator_user"
 pwd = "1234"
@@ -11,9 +12,7 @@ database = "poemator_db"
 tablename = "verses_table"
 
 
-def create_connection(username=user, password=pwd, database_name=None):
-    conn = None
-
+def create_connection(username: str = user, password: str = pwd, database_name: Any = None) -> Any:
     if database_name:
         conn = psycopg2.connect(
             user=username,
@@ -37,7 +36,7 @@ def create_connection(username=user, password=pwd, database_name=None):
         return conn
 
 
-def cursor_execute(conn, query):
+def cursor_execute(conn: Any, query: str) -> Any:
     cur = conn.cursor()
 
     cur.execute(query)
@@ -45,7 +44,7 @@ def cursor_execute(conn, query):
     return cur
 
 
-def check_if_user_exists(username, password):
+def check_if_user_exists(username: str, password: str) -> bool:
     conn = create_connection(username, password)
     query = f"""SELECT usename
                 FROM pg_catalog.pg_user;"""
@@ -62,7 +61,7 @@ def check_if_user_exists(username, password):
     return False
 
 
-def create_user(username, password):
+def create_user(username: str, password: str) -> None:
     conn = create_connection(username, password)
     query = f"""CREATE USER {user}
                 WITH PASSWORD '{pwd}';
@@ -70,7 +69,7 @@ def create_user(username, password):
     cursor_execute(conn, query)
 
 
-def check_if_db_exists(username, password):
+def check_if_db_exists(username: str, password: str) -> bool:
     conn = create_connection(username, password)
     query = "SELECT datname FROM pg_database;"
     cur = cursor_execute(conn, query)
@@ -86,21 +85,21 @@ def check_if_db_exists(username, password):
     return False
 
 
-def create_db(username, password):
+def create_db(username: str, password: str) -> None:
     conn = create_connection(username, password)
     query = f"CREATE DATABASE {database};"
     cursor_execute(conn, query)
     conn.close()
 
 
-def grant_access(username, password):
+def grant_access(username: str, password: str) -> None:
     conn = create_connection(username, password)
     query = f"grant all privileges on database {database} to {user};"
     cursor_execute(conn, query)
     conn.close()
 
 
-def check_if_table_exists():
+def check_if_table_exists() -> bool:
     conn = create_connection(database_name=database)
     query = f"""SELECT EXISTS (
                              select from pg_tables
@@ -116,7 +115,7 @@ def check_if_table_exists():
     return False
 
 
-def create_db_table():
+def create_db_table() -> None:
     conn = create_connection(database_name=database)
     query = f"""CREATE TABLE {tablename}(
                 id integer,
@@ -127,26 +126,26 @@ def create_db_table():
                 last_word text,
                 beg_verse bool,
                 int_verse bool,
-                fin_verse bool,
+                end_verse bool,
                 UNIQUE(id, verse));"""
     cursor_execute(conn, query)
     conn.close()
 
 
-def delete_rows_from_table():
+def delete_rows_from_table() -> None:
     conn = create_connection(database_name=database)
     query = f"DELETE FROM {tablename};"
     cursor_execute(conn, query)
     conn.close()
 
 
-def csv_file_appender(verse):
+def csv_file_appender(verse: List) -> None:
     with open(f"{save_csv_path}/verse_list.csv", "a") as f:
         writer = csv.writer(f)
         writer.writerow(verse)
 
 
-def import_csv_to_db(username, password):
+def import_csv_to_db(username: str, password: str) -> None:
     conn = create_connection(username, password, database)
     query = f"""COPY {tablename} FROM '/home/nebur/Desktop/poemautomator/data/verse_list.csv' 
                WITH (FORMAT csv);"""
@@ -154,12 +153,16 @@ def import_csv_to_db(username, password):
     conn.close()
 
 
-def fetch_verses(long, rhyme, cons=True, unique=False):
+def fetch_verses(long: int, rhyme: str, cons: bool = True, unique: bool = False, type_verse="") -> List[Verse]:
+
     conn = create_connection(database_name=database)
     rhyme_type = "consonant_rhyme" if cons else "asonant_rhyme"
-    query = f"""SELECT verse, last_word, beg, int, end from public.verses 
+    type_verse = f"AND {type_verse}_verse is true" if type_verse else ""
+    query = f"""SELECT beg_verse, int_verse, end_verse, verse, last_word from {tablename} 
                 WHERE long = {long}
-                AND {rhyme_type} = {rhyme};
+                AND {rhyme_type} = '{rhyme}'
+                {type_verse}
+                ;
                 """
 
     cur = cursor_execute(conn, query)
@@ -169,17 +172,18 @@ def fetch_verses(long, rhyme, cons=True, unique=False):
     if unique:
         verses = []
         # Only unique last_words
-        possible_last_words = set([verse[1] for verse in fetched_verses])
+        possible_last_words = set([verse[-1] for verse in fetched_verses])
         for word in possible_last_words:
-            verse = random.choice([fetched for fetched in fetched_verses if fetched[1] == word])
+            verse = random.choice([fetched for fetched in fetched_verses if fetched[-1] == word])
             verses.append(verse)
 
-    verses = fetched_verses
+        return verses
 
+    verses = fetched_verses
     return verses
 
 
-def fetch_rhyme(long, cons=True):
+def fetch_rhyme(long: int, limit: int, cons: bool = True) -> str:
     conn = create_connection(database_name=database)
     rhyme_type = "consonant_rhyme" if cons else "asonant_rhyme"
     query = f"""select {rhyme_type}, count(*) from {tablename}
@@ -190,8 +194,7 @@ def fetch_rhyme(long, cons=True):
     cur = cursor_execute(conn, query)
 
     rhymes = cur.fetchall()
-    rhymes = [rhyme[0] for rhyme in rhymes if rhyme[1] > 5]
+    rhymes = [rhyme[0] for rhyme in rhymes if rhyme[1] > limit]
 
     rhyme = random.choice(rhymes)
-
     return rhyme

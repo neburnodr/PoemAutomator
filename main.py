@@ -53,8 +53,8 @@ def fetch_data() -> None:
             analysed_verse.asonant_rhyme,
             analysed_verse.last_word,
             analysed_verse.beg,
-            analysed_verse.end,
             analysed_verse.int,
+            analysed_verse.end,
 
         ]
 
