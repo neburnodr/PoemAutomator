@@ -6,9 +6,9 @@ from os import path, mkdir
 import sys
 import argparse
 from data.analyse_verses import Syllabifier, last_word_finder, decapitalize
-from data.online_rhymer import Rhymer
+from data.online_rhymer import Rhymer, getting_word_type, find_first_letter
 from data.db_funcs import fetch_verses, fetch_rhyme
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 
 Verse = Tuple[bool, bool, bool, str, str]
 punct = string.punctuation + " ¡¿"
@@ -27,13 +27,14 @@ class PoemAutomator:
 
         self.verses_to_use = {}  # DICT -> {RHYME_CODE: TUPLE(verse, last_word, beg, int, end)} from DB
         self.rhymes_to_use = {}  # DICT -> {RHYME_CODE: str} -> Example: {A: "ado", B: "es"}
+        self.words_used = {}  # DICT -> {RHYME_CODE: LIST[last_word, last_word], RHYME_CODE: LIST[last_word, etc]}
 
         for rhyme_code in rhy_seq:
             if rhyme_code != " ":
                 self.rhymes_to_use[rhyme_code] = ""
                 self.verses_to_use[rhyme_code] = []
+                self.words_used[rhyme_code] = []
 
-        self.words_used = []  # words_used is a list that saves the final words of every verse used
         self.rhymes()  # If the user wants to decide the concrete endings-to-rhyme
         self.poem = self.poem_random_generator()
 
@@ -119,33 +120,48 @@ class PoemAutomator:
                 self.delete_verse_from_verses_to_use(rhyme_code, verse)
 
                 verse_text = changes_after_type_change(verse[3], type_verse, new_type)
-                self.words_used.append(verse[4])
+                self.words_used[rhyme_code].append(verse[4])
                 return verse_text
 
             except IndexError:
+                type_str = "beg" if type_verse == 0 else "int" if type_verse == 1 else "end"
+                rhyme_to_use_now = fetch_rhyme(self.long_verses, 10)
                 verses = fetch_verses(self.long_verses,
-                                      self.rhymes_to_use[rhyme_code],
-                                      cons=True if rhyme_code.upper() == rhyme_code else False,
-                                      unique=False,
-                                      type_verse=type_verse)
+                                      rhyme_to_use_now,
+                                      type_verse=type_str)
 
-                verse = random.choice(verses)
-                verse_last_word = verse[4]
+                verse = random.choice(verses)  # This Verse is a random verse with anther rhyme.
+                last_word = verse[4]  # The new word need the same number of syllables and the same type as this one.
 
-                if verse_last_word in self.words_used:
-                    new_word = self.online_rhyme_finder(verse_last_word)
+                word_to_rhyme_with = random.choice(self.words_used[rhyme_code])
+                rhy_type = "c" if rhyme_code.upper() == rhyme_code else "a"
+                num_syll = Syllabifier(last_word).syllables
+                last_word_type = getting_word_type(last_word)
+                first_letter = find_first_letter(last_word)
 
-                    verse_last_word = last_word_finder(verse)
-                    verse_text = verse[3].replace(verse_last_word, new_word)
+                words_used = []
+                for word_list in self.words_used.values():
+                    for word in word_list:
+                        words_used.append(word)
 
-                    self.words_used.append(new_word)
+                new_word = online_rhyme_finder(word_to_rhyme_with,
+                                               rhy_type,
+                                               num_syll,
+                                               last_word_type,
+                                               first_letter,
+                                               words_used)
+
+                verse_last_word = last_word_finder(verse)
+                verse_text = verse[3].replace(verse_last_word, new_word)
+
+                self.words_used[rhyme_code].append(new_word)
 
                 return verse_text
 
         self.delete_verse_from_verses_to_use(rhyme_code, verse)
 
         #  Add last_word to self.words_used and return the verse to poem_random_generator
-        self.words_used.append(verse[4])
+        self.words_used[rhyme_code].append(verse[4])
         verse_text = verse[3]
         return verse_text
 
@@ -169,19 +185,22 @@ class PoemAutomator:
         else:
             return 1
 
-    def online_rhyme_finder(self, word: str) -> str:
-        syllabyfied_word = Syllabifier(word)
-        syllables = syllabyfied_word.syllables
-        rhyme_code = globals()["rhyme_code"]
-        rhyme_type = "c" if rhyme_code.upper() == rhyme_code else "a"
 
-        rhymes_object = Rhymer(word, rhy_type=rhyme_type, syllables=syllables, words_to_discard=self.words_used)
+def online_rhyme_finder(word: str,
+                        rhyme_type: str,
+                        syllables: int,
+                        first_letter: Optional[str] = None,
+                        word_type: Optional[str] = None,
+                        words_used: Optional[List] = None) -> str:
+        rhymes_object = Rhymer(word, rhyme_type, syllables, first_letter, word_type, words_used)
         rhymes_list = rhymes_object.getting_cronopista()
 
-        new_word = random.choice(rhymes_list)
+        if rhymes_list:
+            new_word = random.choice(rhymes_list)
+            return rhymes_list
 
-        return new_word
-
+        else:
+            print("Yo que sé, joder")
 
 def change_type(type_verse):
     """Possible solutions:
@@ -208,7 +227,7 @@ def changes_after_type_change(verse, old_type, new_type):
         return verse.capitalize()
 
     # new 'int' -> old 'end'
-    return verse + "."
+    return verse.rstrip(string.punctuation) + "."
 
 
 def save_poem(poem: str) -> None:
@@ -278,9 +297,13 @@ def create_poem():
     poem = PoemAutomator(num_ver, long_ver, rhy_seq)
     print(poem.poem)
 
-    save = input("Would you like to save this poem? [Y/N]")
-    if save.capitalize() == "Y":
+    save = input("\nWould you like to save this poem? [Y/N]")
+    if save.upper() == "Y":
         save_poem(poem.poem)
+
+    another = input("Would you like to create another poem? [Y/N]")
+    if another.upper() == "Y":
+        create_poem()
 
 
 if __name__ == "__main__":

@@ -22,9 +22,7 @@ class Syllabifier:
         self.last_word = last_word_finder(sentence)
         self.syllabified_sentence = self.syllabify(self.sentence)
         self.syllables, self.agullaesdr = self.counter(self.syllabified_sentence)
-        self.consonant_rhyme, self.asonant_rhyme = self.rhymer(
-            self.syllabified_sentence
-        )
+        self.consonant_rhyme, self.asonant_rhyme = self.rhymer(self.syllabified_sentence)
         self.beg = self.is_beg(sentence)
         self.end = self.is_end(sentence)
         self.int = self.is_int(sentence)

@@ -5,6 +5,7 @@ from automator import poem_creator
 from typing import List
 from os import path
 import getpass
+from psycopg2 import OperationalError
 
 
 pg_user = "postgres"
@@ -92,8 +93,15 @@ def scrape_verses() -> List[str]:
 
 def if_db():
     """First check if DB is created"""
-    if not db_funcs.check_if_user_exists(pg_user, pg_pwd):
-        db_funcs.create_user(pg_user, pg_pwd)
+    global pg_pwd
+
+    try:
+        if not db_funcs.check_if_user_exists(pg_user, pg_pwd):
+            db_funcs.create_user(pg_user, pg_pwd)
+    except OperationalError:
+        pg_pwd = getpass.getpass("Incorrect Password, try again: ")
+        if not db_funcs.check_if_user_exists(pg_user, pg_pwd):
+            db_funcs.create_user(pg_user, pg_pwd)
 
     if not db_funcs.check_if_db_exists(pg_user, pg_pwd):
         db_funcs.create_db(pg_user, pg_pwd)
