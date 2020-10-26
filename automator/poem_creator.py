@@ -137,7 +137,7 @@ class PoemAutomator:
                 rhy_type = "c" if rhyme_code.upper() == rhyme_code else "a"
                 num_syll = Syllabifier(last_word).syllables
                 last_word_type = getting_word_type(last_word)
-                first_letter = find_first_letter(last_word)
+                first_letter = find_first_letter(last_word, sentence=verse[3])
 
                 words_used = []
                 for word_list in self.words_used.values():
@@ -147,12 +147,13 @@ class PoemAutomator:
                 new_word = online_rhyme_finder(word_to_rhyme_with,
                                                rhy_type,
                                                num_syll,
-                                               last_word_type,
                                                first_letter,
+                                               last_word_type,
                                                words_used)
 
-                verse_last_word = last_word_finder(verse)
-                verse_text = verse[3].replace(verse_last_word, new_word)
+                verse_text = verse[3]
+                verse_last_word = last_word_finder(verse_text)
+                verse_text = verse_text.replace(verse_last_word, new_word)
 
                 self.words_used[rhyme_code].append(new_word)
 
@@ -196,8 +197,7 @@ def online_rhyme_finder(word: str,
         rhymes_list = rhymes_object.getting_cronopista()
 
         if rhymes_list:
-            new_word = random.choice(rhymes_list)
-            return rhymes_list
+            return rhymes_list[0]
 
         else:
             print("Yo que sé, joder")
@@ -231,19 +231,25 @@ def changes_after_type_change(verse, old_type, new_type):
 
 
 def save_poem(poem: str) -> None:
-    now = datetime.datetime.now()
-
     abs_path = path.dirname(__file__)
     rel_path = "poemas/"
     _path = path.join(abs_path, rel_path)
     if not path.exists(_path):
         mkdir(_path)
 
-    file_name = f"{_path}poema{now.strftime('%H:%M:%S_%d-%m-%Y')}.txt"
+    poem_name = input("\nWould you like to give the poem a name? (Leave blank otherwise): ")
+    if poem_name:
+        file_name = f"{_path}{poem_name}.txt"
+        with open(file_name, "w") as f:
+            print(poem, file=f)
 
-    with open(file_name, "w") as f:
-        print(poem, file=f)
+    else:
+        now = datetime.datetime.now()
+        file_name = f"{_path}poema{now.strftime('%H:%M:%S_%d-%m-%Y')}.txt"
+        with open(file_name, "w") as f:
+            print(poem, file=f)
 
+    print(f"[+] Saved poem at path {file_name}")
 
 def getting_inputs() -> Tuple[int, int, str]:
     number_verses = input("Número de versos: ")
