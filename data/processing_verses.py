@@ -1,8 +1,10 @@
 import re
 from typing import List
+from string import punctuation
+from os import path, mkdir
 
 
-junk = "→*/►Â³=Ãâ¤§~²³°+"
+junk = "→*/►Â=Ãâ¤§~º¹²³°+…¯”·"
 
 
 def clean_verses(verses: List) -> List:
@@ -31,7 +33,8 @@ def removing_junk(verse_list: List) -> List:
                                        and not re.search("página \d+", v)
                                        and not re.search("(\[\d+])$", v)
                                        and not re.search("(\w[XVILD]+)", v)
-                                       and not re.search("Este soneto forma", v),
+                                       and not re.search("Este soneto forma", v)
+                                       and not all([letter in punctuation for letter in v]),
                              verse_list)
                       )
 
@@ -39,6 +42,7 @@ def removing_junk(verse_list: List) -> List:
 
     for verse in verse_list:
         if "ç" in verse or "Ç" in verse:
+            save_verse(verse, "Ç_versos")
             continue
         if verse[0] == "¿" and verse.count("?") == 0:
             verse = verse[1:]
@@ -60,10 +64,14 @@ def removing_junk(verse_list: List) -> List:
             verse = verse[:-1]
         if verse[-1] == '"' and verse.count('"') == 1:
             verse = verse[:-1]
+        if verse.count("—") == 1:
+            verse.replace("—", "")
         if verse[-1] == "!" and verse.count("¡") == 0:
             verse = verse[:-1]
         if verse[-1] == "?" and verse.count("¿") == 0:
             verse = verse[:-1]
+        if verse.count("¡") - verse.count("!") == 1:
+            verse = verse + "!"
         if verse.count('"') % 2 != 0:
             verse = verse.strip('"')
         if verse.startswith('"') and verse.endswith('"'):
@@ -91,7 +99,23 @@ def removing_junk(verse_list: List) -> List:
 
         verse = verse.strip(" " + junk).lstrip("?!»)],;:.-").rstrip("¿¡«([").strip(" " + junk)
 
+        if len(verse) < 6:
+            save_verse(verse, "pequeños")
+            continue
+
+        match = re.search("[a-zA-Z]+(\d+)", verse)
+        if match:
+            verse = verse.replace(match.group(1), "")
+
         new_verse_list.append(verse)
 
     print("[+] Done processing the verses")
     return new_verse_list
+
+
+def save_verse(verse, name):
+    if not path.exists("data/versos_desechados"):
+        mkdir("data/versos_desechados")
+
+    with open(f"data/versos_desechados/{name}.txt", "a") as f:
+        print(verse, file=f)

@@ -46,6 +46,10 @@ def fetch_data() -> None:
 
         analysed_verse = Syllabifier(verse)
 
+        if (not analysed_verse.consonant_rhyme
+            or not analysed_verse.asonant_rhyme):
+            continue
+
         ready_verse = [
             i,
             verse,
