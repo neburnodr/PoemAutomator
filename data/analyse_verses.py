@@ -294,6 +294,11 @@ class Syllabifier:
 
     def asonant_rhyme_finder(self, consonant_rhyme):
         asonant_rhyme = "".join([letter for letter in consonant_rhyme if letter in vowels])
+
+        replacements = [("á", "a"), ("é", "e"), ("í", "i"), ("ó", "o"), ("ú", "u")]
+        for replacement in replacements:
+            asonant_rhyme = asonant_rhyme.replace(replacement[0], replacement[1])
+
         return asonant_rhyme
 
     def is_beg(self, sentence):
