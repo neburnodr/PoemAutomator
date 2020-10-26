@@ -71,7 +71,11 @@ def getting_word_type(word) -> str:
     return "I"
 
 
-def find_first_letter(word):
+def find_first_letter(word: str, sentence: Optional[str]=False) -> str:
+    if sentence:
+        if sentence[:sentence.rfind(" ")][-1] not in "aeiouAEIOUáéíóúÁÉÍÓÚhH":
+            return "I"
+
     if word[0] in "aeiouAEIOUáéíóúÁÉÍÓÚhH":
         return "true"
     else:
