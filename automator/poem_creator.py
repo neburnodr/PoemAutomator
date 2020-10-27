@@ -341,14 +341,7 @@ def create_poem():
     if self_decide.strip().upper() == "Y":
         poem.user_determined_rhymes()
     else:
-        asson_or_cons = input("Should the poem have [A]ssonant or [C]onsonant rhymes?")
-        while asson_or_cons.strip().upper() not in "AC":
-            asson_or_cons = input("Assonant or Consonant? [A/C]?")
-
-        if asson_or_cons == "C":
-            poem.random_determined_rhymes()
-        else:
-            poem.random_determined_rhymes()
+        poem.random_determined_rhymes()
 
     generated_poem = poem.poem_generator()
     print(generated_poem)

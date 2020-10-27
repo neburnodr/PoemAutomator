@@ -10,6 +10,7 @@ appdirs = "==1.4.4"
 astroid = "==2.4.2"
 bs4 = "*"
 requests = "*"
+psycopg2-binary = "*"
 
 [requires]
 python_version = "3.8"
