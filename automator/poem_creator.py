@@ -112,7 +112,7 @@ class PoemAutomator:
 
                     self.verses_to_use[key] = fetch_verses(self.long_verses, asson_rhyme, cons=False, unique=True)
 
-    def random_determined_rhymes(self) -> None:
+    def random_rhymes(self) -> None:
         for key in self.rhymes_to_use.keys():
             cons = True if key == key.upper() else False
 
@@ -339,7 +339,7 @@ def create_poem() -> None:
     if self_decide.strip().upper() == "Y":
         poem.user_determined_rhymes()
     else:
-        poem.random_determined_rhymes()
+        poem.random_rhymes()
 
     generated_poem = poem.poem_generator()
     print(generated_poem)
