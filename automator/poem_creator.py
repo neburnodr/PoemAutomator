@@ -19,7 +19,7 @@ class PoemAutomator:
     """Types of lines: beginnings (com), intermediate (int), endings (fin) to iterate through"""
     TYPES_VERSES = ["beg", "int", "end"]
 
-    def __init__(self, num_ver: int, long_ver: Any, rhy_sequence: str) -> None:
+    def __init__(self, num_ver: int, long_ver: List, rhy_sequence: str) -> None:
         """User-defined variables
         num_verses -> INT -> 7. Number of verses in the final poem
         long_verses -> INT -> 8. Possibility RANGES in the FUTURE: 5-7 (5<=long<=7)
@@ -27,11 +27,10 @@ class PoemAutomator:
 
         self.num_verses = num_ver
 
-        if type(long_ver) == str:
-            self.long_verses = int(long_ver)
+        if len(long_ver) == 1:
+            self.long_verses = long_ver[0]
         else:
-            self.long_verses = [int(digit) for digit in long_ver
-                                ]
+            self.long_verses = long_ver
         self.rhy_seq = rhy_sequence
         self.verses_to_use, self.rhymes_to_use, self.words_used = self.populate_dicts()
 
@@ -206,7 +205,7 @@ class PoemAutomator:
         verse_index = self.verses_to_use[rhyme_code].index(verse)
         del self.verses_to_use[rhyme_code][verse_index]
 
-    def type_determiner(self, poem: List) -> int:
+    def type_determiner(self, poem: List[str]) -> int:
         """Returns 0, 1 or 2 depending on which kind of verse we need at each moment. The number stands for the index
         of 'beg', 'int' and 'end' in self.verses_to_use. Tuple(verse, last_word, beg, int, end)"""
 
@@ -229,6 +228,7 @@ def online_rhyme_finder(word: str,
                         first_letter: Optional[str] = None,
                         word_type: Optional[str] = None,
                         words_used: Optional[List] = None) -> str:
+
     rhymes_object = Rhymer(word, rhyme_type, syllables, first_letter, word_type, words_used)
     rhymes_list = rhymes_object.getting_cronopista()
 
@@ -239,7 +239,7 @@ def online_rhyme_finder(word: str,
         print("Yo que sé, joder")
 
 
-def change_type(type_verse):
+def change_type(type_verse: int) -> int:
     """Possible solutions:
     1. Convert other kinds of lines into the one whe needs (com -> int, com -> fin etc.)
     3. Try RegEx for different but similar rhymes -> another script!
@@ -254,7 +254,7 @@ def change_type(type_verse):
     return new_type
 
 
-def changes_after_type_change(verse, old_type, new_type):
+def changes_after_type_change(verse: str, old_type: int, new_type: int) -> str:
     if new_type == 0:
         # new 'beg' -> old 'int'
         return decapitalize(verse, strict=False)
@@ -330,7 +330,7 @@ def getting_inputs() -> Tuple[int, List, str]:
     return number_verses, size_verses, rhyme_sequence
 
 
-def create_poem():
+def create_poem() -> None:
     num_ver, long_ver, rhy_seq = getting_inputs()
 
     poem = PoemAutomator(num_ver, long_ver, rhy_seq)

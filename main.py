@@ -130,6 +130,9 @@ def main() -> None:
     print("[+] Requirements satisfied. Starting the poem generator...", end="\n\n")
     poem_creator.create_poem()
 
+    another = input("Would you like to create another poem? [Y/N]")
+    if another.upper() == "Y":
+        poem_creator.create_poem()
 
 if __name__ == "__main__":
     main()
