@@ -5,9 +5,11 @@ import datetime
 from os import path, mkdir
 import sys
 import argparse
-from data.analyse_verses import Syllabifier, last_word_finder, decapitalize
+from data.analyse_verses import Syllabifier
+from data import help_funcs
+from data.help_funcs import last_word_finder, decapitalize
 from data.online_rhymer import Rhymer, getting_word_type, find_first_letter
-from data.db_funcs import fetch_verses, fetch_rhyme
+from data.db_funcs import fetch_verses, fetch_rhyme, is_subset_of
 from typing import Tuple, List, Optional
 
 Verse = Tuple[bool, bool, bool, str, str]
@@ -52,28 +54,55 @@ class PoemAutomator:
         """Populates the rhymes_to_use dict if the user wants to decide the rhyme-endings beforehand"""
         for key in self.rhymes_to_use.keys():
             if key == key.upper():
-                self.rhymes_to_use[key] = input(f"Rima consonante {key}: -")
+                if key.lower() not in self.rhymes_to_use.keys():
+                    self.rhymes_to_use[key] = input(f"Rima consonante {key}: -")
 
-                verses_to_use = fetch_verses(self.long_verses, self.rhymes_to_use[key], cons=True, unique=True)
-                while not verses_to_use:
+                    verses_to_use = fetch_verses(self.long_verses, self.rhymes_to_use[key], cons=True, unique=True)
+                    while not verses_to_use:
+                        self.rhymes_to_use[key] = input(
+                            f"La rima consonante que has especificado no existe en la base de datos. Prueba de nuevo: ")
+
+                        verses_to_use = fetch_verses(self.long_verses, self.rhymes_to_use[key], cons=True, unique=True)
+
+                    self.verses_to_use[key] = verses_to_use
+
+                else:
+                    #  Here the consonant rhyme must be a subset of the assonant rhyme: abba ABBA -> A ⊆ a, B ⊆ b, etc
                     self.rhymes_to_use[key] = input(
-                        f"La rima consonante que has especificado no existe en la base de datos. Prueba de nuevo: ")
+                        f"Rima consonante {key} (ha de rimar asonantemente con -> {key.lower()}): -"
+                    )
+
+                    while not is_subset_of(self.rhymes_to_use[key.lower()], self.rhymes_to_use[key]):
+                        self.rhymes_to_use[key] = input(
+                            f"Rima consonante {key} (HA DE RIMAR ASONANTEMENTE CON -> {key.lower()}): -"
+                        )
 
                     verses_to_use = fetch_verses(self.long_verses, self.rhymes_to_use[key], cons=True, unique=True)
 
-                self.verses_to_use[key] = verses_to_use
+                    self.verses_to_use[key] = verses_to_use
 
             else:
-                self.rhymes_to_use[key] = input(f"Rima asonante {key}: -")
-
-                verses_to_use = fetch_verses(self.long_verses, self.rhymes_to_use[key], cons=False, unique=True)
-                while not verses_to_use:
-                    self.rhymes_to_use[key] = input(
-                        f"La rima asonante que has especificado no existe en la base de datos. Prueba de nuevo: ")
+                if key.upper() not in self.rhymes_to_use.keys():
+                    #  There is no corresponding consonant rhyme to the given assonant one.
+                    self.rhymes_to_use[key] = input(f"Rima asonante {key}: -")
 
                     verses_to_use = fetch_verses(self.long_verses, self.rhymes_to_use[key], cons=False, unique=True)
+                    while not verses_to_use:
+                        self.rhymes_to_use[key] = input(
+                            f"La rima asonante que has especificado no existe en la base de datos. Prueba de nuevo: ")
 
-                self.verses_to_use[key] = verses_to_use
+                        verses_to_use = fetch_verses(self.long_verses, self.rhymes_to_use[key], cons=False, unique=True)
+
+                    self.verses_to_use[key] = verses_to_use
+
+                else:
+                    #  Assonant rhyme that corresponds to a certain consonant one. A -> a, B -> b, etc
+                    cons_rhyme = self.rhymes_to_use[key.upper()]
+                    asson_rhyme = help_funcs.asonant_rhyme_finder(cons_rhyme)
+
+                    self.rhymes_to_use[key] = asson_rhyme
+
+                    self.verses_to_use[key] = fetch_verses(self.long_verses, asson_rhyme, cons=False, unique=True)
 
     def random_rhymes(self) -> None:
         """If USER choose not to decide the rhymes the DICT gets populated by random rhymes"""
@@ -151,9 +180,8 @@ class PoemAutomator:
                                                last_word_type,
                                                words_used)
 
-                verse_text = verse[3]
-                verse_last_word = last_word_finder(verse_text)
-                verse_text = verse_text.replace(verse_last_word, new_word)
+                verse_last_word = last_word_finder(verse[3])
+                verse_text = verse[3].replace(verse_last_word, new_word)
 
                 self.words_used[rhyme_code].append(new_word)
 
@@ -193,14 +221,15 @@ def online_rhyme_finder(word: str,
                         first_letter: Optional[str] = None,
                         word_type: Optional[str] = None,
                         words_used: Optional[List] = None) -> str:
-        rhymes_object = Rhymer(word, rhyme_type, syllables, first_letter, word_type, words_used)
-        rhymes_list = rhymes_object.getting_cronopista()
+    rhymes_object = Rhymer(word, rhyme_type, syllables, first_letter, word_type, words_used)
+    rhymes_list = rhymes_object.getting_cronopista()
 
-        if rhymes_list:
-            return rhymes_list[0]
+    if rhymes_list:
+        return rhymes_list[0]
 
-        else:
-            print("Yo que sé, joder")
+    else:
+        print("Yo que sé, joder")
+
 
 def change_type(type_verse):
     """Possible solutions:
@@ -250,6 +279,7 @@ def save_poem(poem: str) -> None:
             print(poem, file=f)
 
     print(f"[+] Saved poem at path {file_name}")
+
 
 def getting_inputs() -> Tuple[int, int, str]:
     number_verses = input("Número de versos: ")

@@ -198,3 +198,19 @@ def fetch_rhyme(long: int, limit: int, cons: bool = True) -> str:
 
     rhyme = random.choice(rhymes)
     return rhyme
+
+
+def is_subset_of(assonant_rhyme: str, consonant_rhyme: str) -> bool:
+    """Func to be sure that a given consonant_rhyme is a subset of a given assonant one"""
+    conn = create_connection(database_name=database)
+
+    query = f"""select consonant_rhyme, count(*) from {tablename}
+            where asonant_rhyme = '{assonant_rhyme}'
+            group by consonant_rhyme"""
+
+    cur = cursor_execute(conn, query)
+
+    rhymes = cur.fetchall()
+    rhymes = [rhyme[0] for rhyme in rhymes]
+
+    return True if consonant_rhyme in rhymes else False
