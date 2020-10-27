@@ -10,7 +10,7 @@ from data import help_funcs
 from data.help_funcs import last_word_finder, decapitalize
 from data.online_rhymer import Rhymer, getting_word_type, find_first_letter
 from data.db_funcs import fetch_verses, fetch_rhyme, is_subset_of
-from typing import Tuple, List, Optional
+from typing import Tuple, List, Optional, Dict
 
 Verse = Tuple[bool, bool, bool, str, str]
 punct = string.punctuation + " ¡¿"
@@ -22,39 +22,40 @@ class PoemAutomator:
     TYPES_VERSES = ["beg", "int", "end"]
 
     def __init__(self, num_ver: int, long_ver: int, rhy_seq: str) -> None:
-        """User-defined variables"""
-        self.num_verses = num_ver  # -> INT -> 7. Number of verses in the final poem
-        self.long_verses = long_ver  # -> INT -> 8. Possibility RANGES in the FUTURE: 5-7 (5<=long<=7)
-        self.rhy_seq = rhy_seq  # STR  -> "ABAB BABA" -> Each character is a RHYME_CODE. Space = emptyline
+        """User-defined variables
+        num_verses -> INT -> 7. Number of verses in the final poem
+        long_verses -> INT -> 8. Possibility RANGES in the FUTURE: 5-7 (5<=long<=7)
+        rhy_seq -> STR -> "ABAB BABA" -> Each character is a RHYME_CODE. Space = emptyline"""
 
-        self.verses_to_use = {}  # DICT -> {RHYME_CODE: TUPLE(verse, last_word, beg, int, end)} from DB
-        self.rhymes_to_use = {}  # DICT -> {RHYME_CODE: str} -> Example: {A: "ado", B: "es"}
-        self.words_used = {}  # DICT -> {RHYME_CODE: LIST[last_word, last_word], RHYME_CODE: LIST[last_word, etc]}
+        self.num_verses = num_ver
+        self.long_verses = long_ver
+        self.rhy_seq = rhy_seq
+        self.verses_to_use, self.rhymes_to_use, self.words_used = self.populate_dicts()
 
-        for rhyme_code in rhy_seq:
+    def populate_dicts(self) -> Tuple[Dict, Dict, Dict]:
+        """verses_to_use -> DICT -> {RHYME_CODE: TUPLE(verse, last_word, beg, int, end)} from DB
+           rhymes_to_use -> DICT -> {RHYME_CODE: str} -> Example: {A: "ado", B: "es"}
+           words_used -> DICT -> {RHYME_CODE: LIST[last_word, last_word], RHYME_CODE: LIST[last_word, etc]}"""
+
+        verses_to_use = {}
+        rhymes_to_use = {}
+        words_used = {}
+
+        for rhyme_code in self.rhy_seq:
             if rhyme_code != " ":
-                self.rhymes_to_use[rhyme_code] = ""
-                self.verses_to_use[rhyme_code] = []
-                self.words_used[rhyme_code] = []
+                verses_to_use[rhyme_code] = []
+                rhymes_to_use[rhyme_code] = ""
+                words_used[rhyme_code] = []
 
-        self.rhymes()  # If the user wants to decide the concrete endings-to-rhyme
-        self.poem = self.poem_random_generator()
+        return verses_to_use, rhymes_to_use, words_used
 
-    def rhymes(self) -> None:
-        """Func to decide which path to follow -> self.decide_rhymes() or self.random_rhymes()"""
-        self_decide = input("Quieres elegir las rimas? [Y/N]: ")
-
-        if self_decide.capitalize().strip() == "Y":
-            self.decide_rhymes()
-
-        else:
-            self.random_rhymes()
-
-    def decide_rhymes(self) -> None:
+    def user_determined_rhymes(self) -> None:
         """Populates the rhymes_to_use dict if the user wants to decide the rhyme-endings beforehand"""
         for key in self.rhymes_to_use.keys():
             if key == key.upper():
-                if key.lower() not in self.rhymes_to_use.keys():
+                # Uppercase letters correspond to consonant rhymes
+
+                if not self.rhymes_to_use[key.lower()]:
                     self.rhymes_to_use[key] = input(f"Rima consonante {key}: -")
 
                     verses_to_use = fetch_verses(self.long_verses, self.rhymes_to_use[key], cons=True, unique=True)
@@ -68,6 +69,7 @@ class PoemAutomator:
 
                 else:
                     #  Here the consonant rhyme must be a subset of the assonant rhyme: abba ABBA -> A ⊆ a, B ⊆ b, etc
+
                     self.rhymes_to_use[key] = input(
                         f"Rima consonante {key} (ha de rimar asonantemente con -> {key.lower()}): -"
                     )
@@ -82,8 +84,11 @@ class PoemAutomator:
                     self.verses_to_use[key] = verses_to_use
 
             else:
-                if key.upper() not in self.rhymes_to_use.keys():
+                #  lowercase letter corresponds to assonant rhymes
+
+                if not self.rhymes_to_use[key.upper()]:
                     #  There is no corresponding consonant rhyme to the given assonant one.
+
                     self.rhymes_to_use[key] = input(f"Rima asonante {key}: -")
 
                     verses_to_use = fetch_verses(self.long_verses, self.rhymes_to_use[key], cons=False, unique=True)
@@ -97,6 +102,7 @@ class PoemAutomator:
 
                 else:
                     #  Assonant rhyme that corresponds to a certain consonant one. A -> a, B -> b, etc
+
                     cons_rhyme = self.rhymes_to_use[key.upper()]
                     asson_rhyme = help_funcs.asonant_rhyme_finder(cons_rhyme)
 
@@ -104,8 +110,7 @@ class PoemAutomator:
 
                     self.verses_to_use[key] = fetch_verses(self.long_verses, asson_rhyme, cons=False, unique=True)
 
-    def random_rhymes(self) -> None:
-        """If USER choose not to decide the rhymes the DICT gets populated by random rhymes"""
+    def random_determined_rhymes(self) -> None:
         for key in self.rhymes_to_use.keys():
             cons = True if key == key.upper() else False
 
@@ -118,7 +123,7 @@ class PoemAutomator:
             self.rhymes_to_use[key] = rhyme_to_use
             self.verses_to_use[key] = verses_to_use
 
-    def poem_random_generator(self) -> str:
+    def poem_generator(self) -> str:
         poem = []
 
         for i, rhyme_code in enumerate(self.rhy_seq):
@@ -331,16 +336,30 @@ def create_poem():
         num_ver, long_ver, rhy_seq = parsing_arguments()
 
     poem = PoemAutomator(num_ver, long_ver, rhy_seq)
-    print(poem.poem)
+
+    self_decide = input("Quieres elegir las rimas? [Y/N]: ")
+    if self_decide.strip().upper() == "Y":
+        poem.user_determined_rhymes()
+    else:
+        asson_or_cons = input("Should the poem have [A]ssonant or [C]onsonant rhymes?")
+        while asson_or_cons.strip().upper() not in "AC":
+            asson_or_cons = input("Assonant or Consonant? [A/C]?")
+
+        if asson_or_cons == "C":
+            poem.random_determined_rhymes()
+        else:
+            poem.random_determined_rhymes()
+
+    generated_poem = poem.poem_generator()
+    print(generated_poem)
 
     save = input("\nWould you like to save this poem? [Y/N]")
     if save.upper() == "Y":
-        save_poem(poem.poem)
+        save_poem(generated_poem)
+
+if __name__ == "__main__":
+    create_poem()
 
     another = input("Would you like to create another poem? [Y/N]")
     if another.upper() == "Y":
         create_poem()
-
-
-if __name__ == "__main__":
-    create_poem()
