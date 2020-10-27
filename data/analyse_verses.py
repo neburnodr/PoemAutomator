@@ -1,10 +1,10 @@
 import string
 from data.help_funcs import (last_word_finder,
-                             agu_lla_esdr,
                              block_separator,
                              consonant_rhyme_finder,
                              assonant_rhyme_finder,
-                             type_verse)
+                             type_verse,
+                             counter)
 
 
 vowels = "aeiouáéíóúAEIOUÁÉÍÓÚ"
@@ -21,14 +21,13 @@ vowels_tildadas = "áéíóúÁÉÍÓÚ"
 punct = "¡!\"#$%&'()*+,./:;<=>¿?@[\\]^_—{|}~-«”»"
 
 
-
 class Syllabifier:
     def __init__(self, sentence):
         self.sentence = sentence.strip(".,¿?¡!«'—»();:\"-* ")
         self.last_word = last_word_finder(sentence)
         self.syllabified_sentence = self.syllabify(self.sentence)
-        self.syllables, self.agullaesdr = self.counter(self.syllabified_sentence)
-        self.consonant_rhyme, self.asonant_rhyme = self.rhymer(self.syllabified_sentence)
+        self.syllables, self.agullaes = counter(self.syllabified_sentence)
+        self.consonant_rhyme, self.assonant_rhyme = self.rhymer(self.syllabified_sentence)
         self.beg, self.int, self.end = type_verse(sentence)
 
     def syllabify(self, sentence):
@@ -129,15 +128,9 @@ class Syllabifier:
 
         return separated_sentence
 
-    def counter(self, sentence):
-        sil_count = sentence.count("-")
-        last_word = last_word_finder(sentence)
-        type_word = agu_lla_esdr(last_word)
-        return sil_count + type_word, type_word
-
     def rhymer(self, verso):
         last_word = last_word_finder(verso)
-        consonant_rhyme = consonant_rhyme_finder(last_word, self.agullaesdr)
+        consonant_rhyme = consonant_rhyme_finder(last_word, self.agullaes)
         assonant_rhyme = assonant_rhyme_finder(consonant_rhyme)
         consonant_rhyme = consonant_rhyme.replace("ll", "i").replace("y", "i")
         return consonant_rhyme, assonant_rhyme
@@ -149,9 +142,9 @@ def main():
     print("[+] Sentence:", syllabifier.sentence)
     print("[+] Syllabified sentence:", syllabifier.syllabified_sentence)
     print("[+] Syllables:", syllabifier.syllables)
-    print("[+] Aguda, llana o esdrújula?:", syllabifier.agullaesdr)
+    print("[+] Aguda, llana o esdrújula?:", syllabifier.agullaes)
     print("[+] Bloque consonante a rimar:", syllabifier.consonant_rhyme)
-    print("[+] Bloque asonante a rimar:", syllabifier.asonant_rhyme)
+    print("[+] Bloque asonante a rimar:", syllabifier.assonant_rhyme)
     print("[+] beg: {}, int: {}, end: {}".format(syllabifier.beg, syllabifier.int, syllabifier.end))
 
 

@@ -298,17 +298,28 @@ def getting_inputs() -> Tuple[int, List, str]:
 
     number_verses = int(number_verses)
 
-    size_verses = input(
-        "Longitud de los versos en sílabas (O intervalo: 7-9 para versos de 7 a 9 sílabas): "
-    ).strip(" -").split("-")
-    while not all(elem.isdigit() for elem in size_verses):
-        size_verses = input("""La variable size_verses solo puede contener valores numéricos 
-                               o el guión que separa los márgenes de un intervalo: """)
+    while True:
+        size_verses = input(
+            "Longitud de los versos en sílabas (O intervalo: 7-9 para versos de 7 a 9 sílabas): "
+        ).strip(" -").split("-")
 
-    while not 3 < size_verses < 17:
-        size_verses = int(
-            input("La longitud de los versos ha de ser entre 4 y 16 sílabas: ")
-        )
+        while not all(elem.isdigit() for elem in size_verses):
+            size_verses = input("""La variable size_verses solo puede contener valores numéricos 
+                                   o el guión que separa los márgenes de un intervalo: """).strip(" -").split("-")
+
+        size_verses = [int(digit) for digit in size_verses]
+
+        if len(size_verses) == 2:
+            if not 3 < size_verses[0] and size_verses[1] < 17:
+                print("La longitud de los versos ha de ser entre 4 y 16 sílabas.")
+                continue
+            break
+
+        elif len(size_verses) == 1:
+            if not 3 < size_verses[0] < 17:
+                print("La longitud de los versos ha de ser entre 4 y 16 sílabas.")
+                continue
+            break
 
     rhyme_sequence = input("Secuencia de rimas (p.ej ABBA): ")
     while int(number_verses) != len([seq for seq in rhyme_sequence if seq != " "]):

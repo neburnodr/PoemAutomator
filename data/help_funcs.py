@@ -18,6 +18,13 @@ vowels_tildadas = "áéíóúÁÉÍÓÚ"
 capitals = string.ascii_uppercase
 
 
+def counter(sentence):
+    sil_count = sentence.count("-")
+    last_word = last_word_finder(sentence)
+    type_word = agu_lla_esdr(last_word)
+    return sil_count + type_word, type_word
+
+
 def block_separator(block: str) -> str:
     separated_block = ""
 
@@ -114,9 +121,8 @@ def agu_lla_esdr(word: str) -> int:
             return 1
 
     if (word[-1] in vowels + "y"
-        or word[-1] in "ns"
-        or (word[-1] == "y" and word[-2] == " ")
-    ):
+            or word[-1] in "ns"
+            or (word[-1] == "y" and word[-2] == " ")):
         return 0
 
     return 1
@@ -160,8 +166,8 @@ def consonant_rhyme_finder(last_word, agullaes):
                 break
 
         if (len(block_clean) > 1
-            and block_clean[0] in debiles
-            and block_clean[1] in vowels):
+                and block_clean[0] in debiles
+                and block_clean[1] in vowels):
             block_clean = block_clean[1:]
 
     if " " in block_clean:
@@ -205,7 +211,7 @@ def last_word_finder(sentence: str) -> str:
     return decapitalize(sentence.strip(punct + " "))
 
 
-def int_to_str(number: str) -> str:
+def int_to_str(number: str) -> str:  # TODO
     """transform a digit-string into its written version. 1 -> uno, 25 -> veinticinco"""
     pass
 

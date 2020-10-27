@@ -46,7 +46,7 @@ def fetch_data() -> None:
         analysed_verse = Syllabifier(verse)
 
         if (not analysed_verse.consonant_rhyme
-            or not analysed_verse.asonant_rhyme):
+            or not analysed_verse.assonant_rhyme):
             continue
 
         ready_verse = [
@@ -54,7 +54,7 @@ def fetch_data() -> None:
             verse,
             analysed_verse.syllables,
             analysed_verse.consonant_rhyme,
-            analysed_verse.asonant_rhyme,
+            analysed_verse.assonant_rhyme,
             analysed_verse.last_word,
             analysed_verse.beg,
             analysed_verse.int,
