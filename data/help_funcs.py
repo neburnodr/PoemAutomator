@@ -122,14 +122,14 @@ def agu_lla_esdr(word: str) -> int:
     return 1
 
 
-def consonant_rhyme_finder(last_word, agullaesdr):
+def consonant_rhyme_finder(last_word, agullaes):
     if not last_word.startswith("-"):
         last_word = "-" + last_word
-    if agullaesdr == -1:
+    if agullaes == -1:
         # esdrújula
         while last_word.count("-") > 3:
             last_word = last_word[last_word.find("-", 1):]
-    elif agullaesdr == 0:
+    elif agullaes == 0:
         # llana
         while last_word.count("-") > 2:
             last_word = last_word[last_word.find("-", 1):]
@@ -169,14 +169,14 @@ def consonant_rhyme_finder(last_word, agullaesdr):
     return block_clean
 
 
-def asonant_rhyme_finder(consonant_rhyme):
-    asonant_rhyme = "".join([letter for letter in consonant_rhyme if letter in vowels])
+def assonant_rhyme_finder(consonant_rhyme):
+    assonant_rhyme = "".join([letter for letter in consonant_rhyme if (letter in vowels or letter == "-")])
 
     replacements = [("á", "a"), ("é", "e"), ("í", "i"), ("ó", "o"), ("ú", "u")]
     for replacement in replacements:
-        asonant_rhyme = asonant_rhyme.replace(replacement[0], replacement[1])
+        assonant_rhyme = assonant_rhyme.replace(replacement[0], replacement[1])
 
-    return asonant_rhyme
+    return assonant_rhyme
 
 
 def type_verse(sentence):

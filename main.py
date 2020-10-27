@@ -5,7 +5,6 @@ from automator import poem_creator
 from typing import List
 from os import path
 import getpass
-from psycopg2 import OperationalError
 
 
 pg_user = "postgres"
@@ -102,7 +101,8 @@ def if_db():
     try:
         if not db_funcs.check_if_user_exists(pg_user, pg_pwd):
             db_funcs.create_user(pg_user, pg_pwd)
-    except OperationalError:
+
+    except:
         pg_pwd = getpass.getpass("Incorrect Password, try again: ")
         if not db_funcs.check_if_user_exists(pg_user, pg_pwd):
             db_funcs.create_user(pg_user, pg_pwd)

@@ -153,13 +153,19 @@ def import_csv_to_db(username: str, password: str) -> None:
     conn.close()
 
 
-def fetch_verses(long: int, rhyme: str, cons: bool = True, unique: bool = False, type_verse="") -> List[Verse]:
+def fetch_verses(long: Any, rhyme: str, cons: bool = True, unique: bool = False, type_verse="") -> List[Verse]:
 
     conn = create_connection(database_name=database)
     rhyme_type = "consonant_rhyme" if cons else "asonant_rhyme"
     type_verse = f"AND {type_verse}_verse is true" if type_verse else ""
+
+    if type(long) == list:
+        long_str = f"WHERE long >= {long[0]} AND long <= {long[1]}"
+    else:
+        long_str = f"WHERE long = {long}"
+
     query = f"""SELECT beg_verse, int_verse, end_verse, verse, last_word from {tablename} 
-                WHERE long = {long}
+                {long_str}
                 AND {rhyme_type} = '{rhyme}'
                 {type_verse}
                 ;
@@ -183,13 +189,19 @@ def fetch_verses(long: int, rhyme: str, cons: bool = True, unique: bool = False,
     return verses
 
 
-def fetch_rhyme(long: int, limit: int, cons: bool = True) -> str:
+def fetch_rhyme(long: Any, limit: int, cons: bool = True) -> str:
     conn = create_connection(database_name=database)
     rhyme_type = "consonant_rhyme" if cons else "asonant_rhyme"
-    query = f"""select {rhyme_type}, count(*) from {tablename}
-            where long = {long}
-            group by {rhyme_type}
-            order by count(*) DESC;"""
+
+    if type(long) == list:
+        long_str = f"WHERE long >= {long[0]} AND long <= {long[1]}"
+    else:
+        long_str = f"WHERE long = {long}"
+
+    query = f"""SELECT {rhyme_type}, count(*) FROM {tablename}
+            {long_str}
+            GROUP BY {rhyme_type}
+            ORDER BY count(*) DESC;"""
 
     cur = cursor_execute(conn, query)
 
@@ -200,13 +212,19 @@ def fetch_rhyme(long: int, limit: int, cons: bool = True) -> str:
     return rhyme
 
 
-def is_subset_of(assonant_rhyme: str, consonant_rhyme: str) -> bool:
+def is_subset_of(long: Any, assonant_rhyme: str, consonant_rhyme: str) -> bool:
     """Func to be sure that a given consonant_rhyme is a subset of a given assonant one"""
     conn = create_connection(database_name=database)
 
-    query = f"""select consonant_rhyme, count(*) from {tablename}
-            where asonant_rhyme = '{assonant_rhyme}'
-            group by consonant_rhyme"""
+    if type(long) == list:
+        long_str = f"WHERE long >= {long[0]} AND long <= {long[1]}"
+    else:
+        long_str = f"WHERE long = {long}"
+
+    query = f"""SELECT consonant_rhyme, count(*) FROM {tablename}
+            {long_str}
+            AND asonant_rhyme = '{assonant_rhyme}'
+            GROUP BY consonant_rhyme"""
 
     cur = cursor_execute(conn, query)
 

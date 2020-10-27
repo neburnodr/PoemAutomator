@@ -3,7 +3,7 @@ from data.help_funcs import (last_word_finder,
                              agu_lla_esdr,
                              block_separator,
                              consonant_rhyme_finder,
-                             asonant_rhyme_finder,
+                             assonant_rhyme_finder,
                              type_verse)
 
 
@@ -137,12 +137,10 @@ class Syllabifier:
 
     def rhymer(self, verso):
         last_word = last_word_finder(verso)
-        consonant_rhyme = consonant_rhyme_finder(
-            last_word, self.agullaesdr
-        )
-        asonant_rhyme = asonant_rhyme_finder(consonant_rhyme)
+        consonant_rhyme = consonant_rhyme_finder(last_word, self.agullaesdr)
+        assonant_rhyme = assonant_rhyme_finder(consonant_rhyme)
         consonant_rhyme = consonant_rhyme.replace("ll", "i").replace("y", "i")
-        return consonant_rhyme, asonant_rhyme
+        return consonant_rhyme, assonant_rhyme
 
 
 def main():

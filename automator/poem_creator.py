@@ -3,14 +3,12 @@ import random
 import string
 import datetime
 from os import path, mkdir
-import sys
-import argparse
 from data.analyse_verses import Syllabifier
 from data import help_funcs
 from data.help_funcs import last_word_finder, decapitalize
 from data.online_rhymer import Rhymer, getting_word_type, find_first_letter
 from data.db_funcs import fetch_verses, fetch_rhyme, is_subset_of
-from typing import Tuple, List, Optional, Dict
+from typing import Tuple, List, Optional, Dict, Any
 
 Verse = Tuple[bool, bool, bool, str, str]
 punct = string.punctuation + " ¡¿"
@@ -21,15 +19,20 @@ class PoemAutomator:
     """Types of lines: beginnings (com), intermediate (int), endings (fin) to iterate through"""
     TYPES_VERSES = ["beg", "int", "end"]
 
-    def __init__(self, num_ver: int, long_ver: int, rhy_seq: str) -> None:
+    def __init__(self, num_ver: int, long_ver: Any, rhy_sequence: str) -> None:
         """User-defined variables
         num_verses -> INT -> 7. Number of verses in the final poem
         long_verses -> INT -> 8. Possibility RANGES in the FUTURE: 5-7 (5<=long<=7)
         rhy_seq -> STR -> "ABAB BABA" -> Each character is a RHYME_CODE. Space = emptyline"""
 
         self.num_verses = num_ver
-        self.long_verses = long_ver
-        self.rhy_seq = rhy_seq
+
+        if type(long_ver) == str:
+            self.long_verses = int(long_ver)
+        else:
+            self.long_verses = [int(digit) for digit in long_ver
+                                ]
+        self.rhy_seq = rhy_sequence
         self.verses_to_use, self.rhymes_to_use, self.words_used = self.populate_dicts()
 
     def populate_dicts(self) -> Tuple[Dict, Dict, Dict]:
@@ -74,7 +77,7 @@ class PoemAutomator:
                         f"Rima consonante {key} (ha de rimar asonantemente con -> {key.lower()}): -"
                     )
 
-                    while not is_subset_of(self.rhymes_to_use[key.lower()], self.rhymes_to_use[key]):
+                    while not is_subset_of(self.long_verses, self.rhymes_to_use[key.lower()], self.rhymes_to_use[key]):
                         self.rhymes_to_use[key] = input(
                             f"Rima consonante {key} (HA DE RIMAR ASONANTEMENTE CON -> {key.lower()}): -"
                         )
@@ -104,7 +107,7 @@ class PoemAutomator:
                     #  Assonant rhyme that corresponds to a certain consonant one. A -> a, B -> b, etc
 
                     cons_rhyme = self.rhymes_to_use[key.upper()]
-                    asson_rhyme = help_funcs.asonant_rhyme_finder(cons_rhyme)
+                    asson_rhyme = help_funcs.assonant_rhyme_finder(cons_rhyme)
 
                     self.rhymes_to_use[key] = asson_rhyme
 
@@ -286,7 +289,7 @@ def save_poem(poem: str) -> None:
     print(f"[+] Saved poem at path {file_name}")
 
 
-def getting_inputs() -> Tuple[int, int, str]:
+def getting_inputs() -> Tuple[int, List, str]:
     number_verses = input("Número de versos: ")
     while not number_verses.isdigit():
         number_verses = input(
@@ -295,13 +298,12 @@ def getting_inputs() -> Tuple[int, int, str]:
 
     number_verses = int(number_verses)
 
-    size_verses = input("Longitud de los versos en sílabas: ")
-    while not size_verses.isdigit():
-        size_verses = input(
-            "La variable size_verses solo puede contener valores numéricos: "
-        )
-
-    size_verses = int(size_verses)
+    size_verses = input(
+        "Longitud de los versos en sílabas (O intervalo: 7-9 para versos de 7 a 9 sílabas): "
+    ).strip(" -").split("-")
+    while not all(elem.isdigit() for elem in size_verses):
+        size_verses = input("""La variable size_verses solo puede contener valores numéricos 
+                               o el guión que separa los márgenes de un intervalo: """)
 
     while not 3 < size_verses < 17:
         size_verses = int(
@@ -317,23 +319,8 @@ def getting_inputs() -> Tuple[int, int, str]:
     return number_verses, size_verses, rhyme_sequence
 
 
-def parsing_arguments() -> Tuple[int, int, str]:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("lines")
-    parser.add_argument("longitud")
-    parser.add_argument("sequence")
-    args = parser.parse_args()
-    num_verses = args.verses
-    long_verses = args.longitud
-    seq_rhymes = args.sequence
-    return int(num_verses), int(long_verses), seq_rhymes
-
-
 def create_poem():
-    if len(sys.argv) == 1:
-        num_ver, long_ver, rhy_seq = getting_inputs()
-    else:
-        num_ver, long_ver, rhy_seq = parsing_arguments()
+    num_ver, long_ver, rhy_seq = getting_inputs()
 
     poem = PoemAutomator(num_ver, long_ver, rhy_seq)
 
@@ -349,6 +336,7 @@ def create_poem():
     save = input("\nWould you like to save this poem? [Y/N]")
     if save.upper() == "Y":
         save_poem(generated_poem)
+
 
 if __name__ == "__main__":
     create_poem()
