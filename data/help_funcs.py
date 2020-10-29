@@ -193,6 +193,8 @@ def type_verse(sentence):
 
 
 def last_word_finder(sentence: str) -> str:
+    sentence = sentence.strip(punct + " ")
+
     if sentence.count(" ") != 0:
         last_word = sentence[sentence.rfind(" "):].strip(punct + " ")
 

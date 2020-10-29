@@ -115,8 +115,8 @@ class PoemAutomator:
     def random_rhymes(self) -> None:
         for key in self.rhymes_to_use.keys():
             cons = True if key == key.upper() else False
-
-            rhyme_to_use = fetch_rhyme(self.long_verses, self.rhy_seq.count(key), cons=cons)
+            limit = self.rhy_seq.count(key) + (self.rhy_seq.count(key) / 2)
+            rhyme_to_use = fetch_rhyme(self.long_verses, limit, cons=cons)
             verses_to_use = fetch_verses(self.long_verses, rhyme_to_use, cons=cons, unique=True)
             while len(verses_to_use) < self.rhy_seq.count(key):
                 rhyme_to_use = fetch_rhyme(self.long_verses, self.rhy_seq.count(key), cons=cons)

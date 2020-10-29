@@ -12,6 +12,8 @@ bs4 = "*"
 requests = "*"
 psycopg2-binary = "*"
 mypy = "*"
+pytest = "*"
+lxml = "*"
 
 [requires]
 python_version = "3.8"

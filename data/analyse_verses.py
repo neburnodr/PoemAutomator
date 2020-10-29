@@ -142,6 +142,7 @@ def main():
     print("[+] Sentence:", syllabifier.sentence)
     print("[+] Syllabified sentence:", syllabifier.syllabified_sentence)
     print("[+] Syllables:", syllabifier.syllables)
+    print("[+] Last word:", syllabifier.last_word)
     print("[+] Aguda, llana o esdrújula?:", syllabifier.agullaes)
     print("[+] Bloque consonante a rimar:", syllabifier.consonant_rhyme)
     print("[+] Bloque asonante a rimar:", syllabifier.assonant_rhyme)

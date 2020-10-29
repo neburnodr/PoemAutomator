@@ -84,3 +84,38 @@ class TestSyll:
         assert syll.consonant_rhyme == "in"
         assert syll.assonant_rhyme == "i"
         assert syll.syllables == 7
+
+    def test_thirteen(self):
+        sentence = '"Fontainebleau" .'
+        syll = Syllabifier(sentence)
+        assert syll.last_word is not None
+
+    def test_fourteen(self):
+        sentence = '"No juréis por la luna" .....'
+        syll = Syllabifier(sentence)
+        assert syll.last_word is not None
+
+    def test_fifteen(self):
+        sentence = '"No juréis por la luna" .....'
+        syll = Syllabifier(sentence)
+        assert syll.last_word is not None
+
+    def test_sixteen(self):
+        sentence = '( Cuerpo de agua en el cristal de un vaso )'
+        syll = Syllabifier(sentence)
+        assert syll.last_word is not None
+
+    def test_seventeen(self):
+        sentence = 'esperanza infinita -,'
+        syll = Syllabifier(sentence)
+        assert syll.last_word is not None
+
+    def test_eighteen(self):
+        sentence = '¿Será posible ?'
+        syll = Syllabifier(sentence)
+        assert syll.last_word is not None
+
+    def test_nineteen(self):
+        sentence = 'De angustia lleno y doloroso asombro :'
+        syll = Syllabifier(sentence)
+        assert syll.last_word is not None
