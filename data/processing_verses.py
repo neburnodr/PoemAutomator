@@ -3,8 +3,9 @@ from typing import List
 from string import punctuation
 from os import path, mkdir
 
+from data.help_funcs import delete_captures_within_matches
 
-junk = "→*/►Â=Ãâ¤§~º¹²³°+…¯”·"
+junk = "→*/►◄←‹><Â=Ãâ¤§~º¹²³°+…¯”“·"
 
 
 def clean_verses(verses: List) -> List:
@@ -34,6 +35,7 @@ def removing_junk(verse_list: List) -> List:
                                        and not re.search("(\[\d+])$", v)
                                        and not re.search("(\w[XVILD]+)", v)
                                        and not re.search("Este soneto forma", v)
+                                       and not re.search("\d\.", v)
                                        and not all([letter in punctuation for letter in v]),
                              verse_list)
                       )
@@ -106,6 +108,35 @@ def removing_junk(verse_list: List) -> List:
         match = re.search("[a-zA-Z]+(\d+)", verse)
         if match:
             verse = verse.replace(match.group(1), "")
+
+        match = re.search("([\.,]){4,}", verse)
+        if match:
+            verse = verse.replace(match.group(0), "...")
+
+        match = re.search("(( )+[?!.,:»;]+)", verse)
+        if match:
+            empty_space = match.group(2)
+            replacement = match.group(0).replace(empty_space, "")
+            verse = verse.replace(match.group(0), replacement)
+
+        match = re.findall(",\w", verse)
+        if match:
+            for m in match:
+                repl = m[0] + " " + m[1]
+                verse = verse.replace(m, repl)
+
+        match = re.findall("(\.{3}[a-zA-Z])", verse)
+        if match:
+            for m in match:
+                repl = m[0:3] + " " + m[-1]
+                verse = verse.replace(m, repl)
+
+        match = re.findall("(\.{1}[a-z])", verse)
+        if match:
+            for m in match:
+                repl = " " + m[-1]
+                verse = verse.replace(m, repl)
+
 
         new_verse_list.append(verse)
 

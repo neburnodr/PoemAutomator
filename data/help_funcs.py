@@ -1,13 +1,14 @@
 from typing import Optional
 import string
-
+import re
+from typing import List
 
 punct = "¡!\"#$%&'()*+,./:;<=>¿?@[\\]^_—{|}~-«”»"
 
 vowels = "aeiouáéíóúAEIOUÁÉÍÓÚ"
 vowels_h = vowels + "h"
 consonants = (
-    "".join((letter for letter in string.ascii_letters if letter not in vowels)) + "ñÑ"
+        "".join((letter for letter in string.ascii_letters if letter not in vowels)) + "ñÑ"
 )
 
 debiles = "UIui"
@@ -147,7 +148,7 @@ def consonant_rhyme_finder(last_word, agullaes):
     block_clean = "".join([letter for letter in last_word if letter != "-"])
 
     if len(block_clean) > 1 and not all(
-        letter in capitals for letter in block_clean
+            letter in capitals for letter in block_clean
     ):
 
         while block_clean[0] not in vowels:
@@ -222,3 +223,15 @@ def decapitalize(word: str, strict: Optional[bool] = True):
     if strict:
         return word.lower()
     return word[0].lower() + word[1:]
+
+
+def delete_captures_within_matches(verse: str, rgx_patterns: List) -> str:
+    for pattern in rgx_patterns:
+        match = re.search(pattern, verse)
+        if match:
+            string_match = match.group(0)
+            to_replace = match.group(1)
+            replacement = re.sub(to_replace, "", string_match)
+            verse = verse.replace(string_match, replacement)
+
+    return verse

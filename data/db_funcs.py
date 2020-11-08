@@ -1,7 +1,7 @@
 import psycopg2
 import csv
 import random
-from typing import Tuple, List, Any
+from typing import Tuple, List, Any, Optional
 
 save_csv_path = "/home/nebur/Desktop/poemautomator/data"
 Verse = List[Tuple[bool, bool, bool, str, str]]
@@ -9,7 +9,7 @@ Verse = List[Tuple[bool, bool, bool, str, str]]
 user = "poemator_user"
 pwd = "1234"
 database = "poemator_db"
-tablename = "verses_table"
+tablename = "poems_verse"
 
 
 def create_connection(username: str = user, password: str = pwd, database_name: Any = None) -> Any:
@@ -145,7 +145,7 @@ def csv_file_appender(verse: List) -> None:
         writer.writerow(verse)
 
 
-def import_csv_to_db(username: str, password: str) -> None:
+def import_csv_to_db(username: Optional[str] = user, password: Optional[str] = pwd) -> None:
     conn = create_connection(username, password, database)
     query = f"""COPY {tablename} FROM '/home/nebur/Desktop/poemautomator/data/verse_list.csv' 
                WITH (FORMAT csv);"""
