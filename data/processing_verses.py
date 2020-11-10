@@ -16,12 +16,15 @@ def clean_verses(verses: List) -> List:
     for verse in verses:
         if len(verse) < 70:
             new_verses_list.append(verse)
+        else:
+            save_verse(verse, "big")
 
     return removing_junk(new_verses_list)
 
 
 def removing_junk(verse_list: List) -> List:
     verse_list = [v.strip(" " + junk).lstrip("?!»)],;:.-").rstrip("¿¡«([").strip(" " + junk) for v in verse_list]
+    # TODO -> transform filter func  so that I can save the discarded verses
     verse_list = list(filter(lambda v: len(v) > 6
                                        and not re.search("(\d+[-|.|/]\d+)|([-|.|/]\d+)|([,|;]\d+)", v)
                                        and not re.search("([A-Z\W]{2,} [A-Z\W]{2,})", v)
@@ -44,7 +47,7 @@ def removing_junk(verse_list: List) -> List:
 
     for verse in verse_list:
         if "ç" in verse or "Ç" in verse:
-            save_verse(verse, "Ç_versos")
+            save_verse(verse, "verses_w_ç")
             continue
         if verse[0] == "¿" and verse.count("?") == 0:
             verse = verse[1:]
@@ -99,12 +102,6 @@ def removing_junk(verse_list: List) -> List:
             for match in matches:
                 verse = verse.replace(match, "")
 
-        verse = verse.strip(" " + junk).lstrip("?!»)],;:.-").rstrip("¿¡«([").strip(" " + junk)
-
-        if len(verse) < 6:
-            save_verse(verse, "pequeños")
-            continue
-
         match = re.search("[a-zA-Z]+(\d+)", verse)
         if match:
             verse = verse.replace(match.group(1), "")
@@ -137,8 +134,19 @@ def removing_junk(verse_list: List) -> List:
                 repl = " " + m[-1]
                 verse = verse.replace(m, repl)
 
+        match = re.findall("\d+, \d+", verse)
+        if match:
+            verse = verse.replace(match[0], "")
+
+        verse = verse.strip(" " + junk).lstrip("?!»)],;:.-").rstrip("¿¡«([").strip(" " + junk)
+
+        if len(verse) < 6:
+            save_verse(verse, "small")
+            continue
 
         new_verse_list.append(verse)
+
+
 
     print("[+] Done processing the verses")
     return new_verse_list

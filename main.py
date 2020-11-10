@@ -1,5 +1,5 @@
 from data import scraping_amediavoz, scraping_buscapoemas, db_funcs
-from data.processing_verses import clean_verses
+from data.processing_verses import clean_verses, save_verse
 from data.analyse_verses import Syllabifier
 from automator import poem_creator
 from typing import List
@@ -47,9 +47,15 @@ def fetch_data() -> None:
 
         if (not analysed_verse.consonant_rhyme
             or not analysed_verse.assonant_rhyme):
+            save_verse(verse, "no_rhyme")
             continue
 
         if analysed_verse.syllables < 4:
+            save_verse(verse, "small")
+            continue
+
+        if analysed_verse.syllables > 19:
+            save_verse(verse, "big")
             continue
 
         ready_verse = [
