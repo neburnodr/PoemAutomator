@@ -119,15 +119,15 @@ def create_db_table() -> None:
     conn = create_connection(database_name=database)
     query = f"""CREATE TABLE {tablename}(
                 id integer,
-                verse text,
-                long integer,
-                consonant_rhyme text,
-                asonant_rhyme text,
+                verse_text text,
+                verse_length integer,
+                cons_rhy text,
+                asson_rhy text,
                 last_word text,
-                beg_verse bool,
-                int_verse bool,
-                end_verse bool,
-                UNIQUE(id, verse));"""
+                is_beg bool,
+                is_int bool,
+                is_end bool,
+                UNIQUE(id, verse_text));"""
     cursor_execute(conn, query)
     conn.close()
 
@@ -156,15 +156,15 @@ def import_csv_to_db(username: Optional[str] = user, password: Optional[str] = p
 def fetch_verses(long: Any, rhyme: str, cons: bool = True, unique: bool = False, type_verse="") -> List[Verse]:
 
     conn = create_connection(database_name=database)
-    rhyme_type = "consonant_rhyme" if cons else "asonant_rhyme"
-    type_verse = f"AND {type_verse}_verse is true" if type_verse else ""
+    rhyme_type = "cons_rhy" if cons else "asson_rhy"
+    type_verse = f"AND is_{type_verse} is true" if type_verse else ""
 
     if type(long) == list:
-        long_str = f"WHERE long >= {long[0]} AND long <= {long[1]}"
+        long_str = f"WHERE verse_length >= {long[0]} AND long <= {long[1]}"
     else:
-        long_str = f"WHERE long = {long}"
+        long_str = f"WHERE verse_length = {long}"
 
-    query = f"""SELECT beg_verse, int_verse, end_verse, verse, last_word from {tablename} 
+    query = f"""SELECT is_beg, is_int, is_end, verse_text, last_word from {tablename} 
                 {long_str}
                 AND {rhyme_type} = '{rhyme}'
                 {type_verse}
@@ -191,12 +191,12 @@ def fetch_verses(long: Any, rhyme: str, cons: bool = True, unique: bool = False,
 
 def fetch_rhyme(long: Any, limit: int, cons: bool = True) -> str:
     conn = create_connection(database_name=database)
-    rhyme_type = "consonant_rhyme" if cons else "asonant_rhyme"
+    rhyme_type = "cons_rhy" if cons else "asson_rhy"
 
     if type(long) == list:
-        long_str = f"WHERE long >= {long[0]} AND long <= {long[1]}"
+        long_str = f"WHERE verse_length >= {long[0]} AND verse_length <= {long[1]}"
     else:
-        long_str = f"WHERE long = {long}"
+        long_str = f"WHERE verse_length = {long}"
 
     query = f"""SELECT {rhyme_type}, count(*) FROM {tablename}
             {long_str}
@@ -217,14 +217,14 @@ def is_subset_of(long: Any, assonant_rhyme: str, consonant_rhyme: str) -> bool:
     conn = create_connection(database_name=database)
 
     if type(long) == list:
-        long_str = f"WHERE long >= {long[0]} AND long <= {long[1]}"
+        long_str = f"WHERE verse_length >= {long[0]} AND verse_length <= {long[1]}"
     else:
-        long_str = f"WHERE long = {long}"
+        long_str = f"WHERE verse_length = {long}"
 
-    query = f"""SELECT consonant_rhyme, count(*) FROM {tablename}
+    query = f"""SELECT cons_rhy, count(*) FROM {tablename}
             {long_str}
-            AND asonant_rhyme = '{assonant_rhyme}'
-            GROUP BY consonant_rhyme"""
+            AND asson_rhy = '{assonant_rhyme}'
+            GROUP BY cons_rhy"""
 
     cur = cursor_execute(conn, query)
 

@@ -49,6 +49,9 @@ def fetch_data() -> None:
             or not analysed_verse.assonant_rhyme):
             continue
 
+        if analysed_verse.syllables < 4:
+            continue
+
         ready_verse = [
             i,
             verse,
